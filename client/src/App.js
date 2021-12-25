@@ -15,7 +15,7 @@ function App(){
   }, [])
   return(
     <div>
-       <p>{data.name}</p>
+       <p>"HELLO"</p>
     </div>
     // data.map((user,i) => (
     //   <p key={"user_"+i}>{user.name}</p>

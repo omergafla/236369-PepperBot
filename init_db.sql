@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS Users
 (
-    ID integer NOT NULL,
+    ID SERIAL,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(50),
     is_admin integer DEFAULT 0,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Users
 
 CREATE TABLE IF NOT EXISTS Polls
 (
-    ID integer NOT NULL,
+    ID SERIAL,
     question VARCHAR(50) NOT NULL,
     permissions text DEFAULT '*',
     created_by integer,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Polls
 
 CREATE TABLE IF NOT EXISTS Polls_Options
 (
-    ID integer NOT NULL,
+    ID SERIAL,
     poll_id integer,
     option text,
     PRIMARY KEY (ID),
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS Polls_Options
 
 CREATE TABLE IF NOT EXISTS Users_Answers
 (
-    ID integer NOT NULL,
+    ID SERIAL,
     user_id integer,
 	poll_id integer,
     option_id integer,
@@ -40,4 +40,3 @@ CREATE TABLE IF NOT EXISTS Users_Answers
     FOREIGN KEY (poll_id) REFERENCES Polls(ID),
 	FOREIGN KEY (option_id) REFERENCES Polls_Options(ID)
 );
-
