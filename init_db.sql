@@ -1,12 +1,14 @@
 CREATE TABLE IF NOT EXISTS Users
 (
     ID SERIAL,
+    effective_id integer NOT NULL,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(50),
     is_admin integer DEFAULT 0,
+    is_active integer DEFAULT 1,
     created_at date,
     PRIMARY KEY (ID),
-    UNIQUE (username)
+    UNIQUE (effective_id)
 );
 
 CREATE TABLE IF NOT EXISTS Polls
