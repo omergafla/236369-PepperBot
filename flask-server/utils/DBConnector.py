@@ -70,7 +70,7 @@ class DBConnector:
     def __init__(self):
         try:
             # Obtain the configuration parameters
-            params = DBConnector.__config()
+            params = DBConnector.__config(os.path.join(os.path.join(os.getcwd(), "utils"), 'database.ini'), 'postgresql')
             self.connection = psycopg2.connect(**params)
             self.connection.autocommit = False
             self.cursor = self.connection.cursor()
@@ -135,7 +135,7 @@ class DBConnector:
 
     # grant credentials
     @staticmethod
-    def __config(filename=os.getcwd()+'\\flask-server\\utils\\database.ini', section='postgresql'):
+    def __config(filename, section):
         # create a parser
         parser = ConfigParser()
         # read config file
@@ -149,5 +149,8 @@ class DBConnector:
                 db[param[0]] = param[1]
         else:
             # file not found
-            raise DatabaseException.database_ini_ERROR("Please modify database.ini file under Utility")
+            db = DBConnector.__config(
+                os.getcwd()+"\\flask-server\\utils\\database.ini", "postgresql")
+            if db is None:
+                raise DatabaseException.database_ini_ERROR("Please modify database.ini file under Utility")
         return db

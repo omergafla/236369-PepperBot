@@ -17,6 +17,7 @@ def sql_call(sql_string):
     conn = Connector.DBConnector()
     rows_effected, result_rows = conn.execute(sql_string)
     conn.commit()
+    conn.close()
     return result_rows
 
 def set_active_value(effective_id, active):
@@ -54,6 +55,7 @@ def insert_user():
         response = set_active_value(effective_id, 1)
     except Exception as e:
         response = app.response_class(status = 500)
+        print(e.message)
     finally:
         return response
 

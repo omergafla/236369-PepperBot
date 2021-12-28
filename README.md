@@ -10,4 +10,4 @@ start client -
 
 start server - 
     cd flask-server
-    python server.py
+    flask run
