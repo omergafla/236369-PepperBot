@@ -1,6 +1,10 @@
-from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update, ForceReply, ParseMode, Poll
+import telegram
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, updater, CallbackQueryHandler
 import requests
+from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
+from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
+import json
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -29,13 +33,6 @@ def register(update: Update, context: CallbackContext) -> None:
 
     except Exception as e:
         pass
-    #     sql_query_string = f"INSERT INTO users (effective_id, username, created_at) VALUES ({effective_id}, '{username}', '{created_at}')"
-    #     result = sql_call(sql_query_string)
-    #     update.message.reply_text("Thanks!")
-    # except DatabaseException.UNIQUE_VIOLATION as e:
-    #     update.message.reply_text("Already registered")
-    # except Exception as e:
-    #     update.message.reply_text("Oops!")
 
 
 def remove(update: Update, context: CallbackContext) -> None:
@@ -57,6 +54,29 @@ def echo(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(update.message.text)
 
 
+def poll(bot, question, answers, ids, poll_id):
+    button_list = []
+    for answer in answers:
+        detailed_answer = {"poll_id_from_db": poll_id, "answer": answer}
+        button_list.append(InlineKeyboardButton(answer, callback_data = json.dumps(detailed_answer)))
+    reply_markup=InlineKeyboardMarkup(build_menu(button_list,n_cols=1)) #n_cols = 1 is for single column and mutliple rows
+    for id in ids:
+        bot.send_message(chat_id=id, text=question,reply_markup=reply_markup)
+
+def build_menu(buttons,n_cols,header_buttons=None,footer_buttons=None):
+  menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+  if header_buttons:
+    menu.insert(0, header_buttons)
+  if footer_buttons:
+    menu.append(footer_buttons)
+  return menu
+
+def handle_callback_query(update, context):
+    print(json.loads(update.callback_query.data))
+    context.bot.send_message(chat_id=update.effective_chat.id, 
+                             text='Your Answer: <b> '+update.callback_query.data+'</b>', parse_mode=telegram.ParseMode.HTML)
+    update.callback_query.edit_message_reply_markup(None)
+
 
 def main() -> None:
     try:
@@ -65,6 +85,8 @@ def main() -> None:
         dispatcher.add_handler(CommandHandler("start", start))
         dispatcher.add_handler(CommandHandler("register", register))
         dispatcher.add_handler(CommandHandler("remove", remove))
+        dispatcher.add_handler(CommandHandler('poll', poll))
+        dispatcher.add_handler(CallbackQueryHandler(handle_callback_query, pattern='.*'))
         # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
         updater.start_polling()
         updater.idle()

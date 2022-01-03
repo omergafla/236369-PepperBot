@@ -4,9 +4,16 @@ from psycopg2 import sql
 from datetime import datetime
 
 import requests
+import telegram
 import utils.DBConnector as Connector
 from utils.ReturnValue import ReturnValue
 from utils.Exceptions import DatabaseException
+from telegram import Update, ForceReply, ParseMode, Poll
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, updater, CallbackQueryHandler
+import requests
+from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
+from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
+import telegram_hanlder
 
 
 app = Flask(__name__)
@@ -35,10 +42,12 @@ def set_active_value(effective_id, active):
     finally:
         return response
 
-
-
 @app.route("/")
 def home():
+    
+    bot=telegram.Bot(token="5026396246:AAHVsBnqNR0xGLsalEFgRZMRyw2CZT1hKMo")
+    chat=869421566
+    telegram_hanlder.poll(bot, "#23 how are you?", ["good","very good"], [869421566], 23)
     return "Hello, Flask!"
 
 
