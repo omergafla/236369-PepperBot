@@ -77,7 +77,10 @@ def delete_user():
         response = app.response_class(status = 500)
     finally:
         return response
- 
+
+@app.route("/add_poll", methods = ['POST'])
+def add_poll():
+    print(requset)
 
 if __name__ == '__main__':
     app.run(debug=False)
