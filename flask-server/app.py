@@ -3,6 +3,7 @@ from flask import request
 from psycopg2 import sql
 from datetime import datetime
 
+import json
 import requests
 import telegram
 import utils.DBConnector as Connector
@@ -80,8 +81,25 @@ def delete_user():
 
 @app.route("/add_poll", methods = ['POST'])
 def add_poll():
-    print(requset)
+    data = request.data
+    poll = json.loads(data)
+    time_now = datetime.now().strftime('%Y-%m-%d')
+    sql_query_string = sql.SQL(f"INSERT INTO polls (question, created_at) VALUES ({poll.question}, '{time_now}')")
+    result = sql_call(sql_query_string)
+    _id = "1"
+    for answer in poll['answers']:
+        sql_query_string = sql.SQL(f"INSERT INTO polls_options (poll_id, option) VALUES ({_id}, '{answer.option}')")
+        result = sql_call(sql_query_string)
+
+    
+    
+
+
+
+   
 
 if __name__ == '__main__':
     app.run(debug=False)
 
+#TODO: filter by poll Id(?) + answer Id
+#TODO: Autehntication

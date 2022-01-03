@@ -10,22 +10,21 @@ import AddIcon from '@mui/icons-material/Add';
 
 const CreateForm = () => {
   const [inputFields, setInputFields] = useState([
-    { id: Math.random(), option: ''},
+    { id: Math.random(), option: '' },
   ]);
+  const [question, setQuestion] = useState("")
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log("InputFields", inputFields);
 
+    const result = {'question': question, 'answers': inputFields} 
     const params = {
-      method: 'POST', 
-      headers: {
-      'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(inputFields)
-  }
-    fetch("http://localhost:5000/add_poll", params)
+      method: 'POST',
+      body: JSON.stringify(result)
+    }
     
+    fetch("http://localhost:5000/add_poll", params)
+
   };
 
   const handleChangeInput = (id: number, event: any) => {
@@ -40,7 +39,7 @@ const CreateForm = () => {
   }
 
   const handleAddFields = () => {
-    setInputFields([...inputFields, { id: Math.random(), option: ''}])
+    setInputFields([...inputFields, { id: Math.random(), option: '' }])
   }
 
   const handleRemoveFields = (id: any) => {
@@ -49,10 +48,21 @@ const CreateForm = () => {
     setInputFields(values);
   }
 
+  const handleQuestionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestion(event.target.value);
+  };
+
   return (
     <Container>
       <h1>Add New Member</h1>
       <form onSubmit={handleSubmit}>
+          <TextField
+              name="question"
+              label="Question"
+              variant="outlined"
+              value={question}
+              onChange={handleQuestionChange}
+            />
         {inputFields.map((inputField: { id: number; option: string; }) => (
           <div key={inputField.id}>
             <TextField
