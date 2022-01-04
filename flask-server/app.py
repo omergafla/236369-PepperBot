@@ -91,12 +91,17 @@ def add_poll():
         sql_query_string = sql.SQL(f"INSERT INTO polls_options (poll_id, option) VALUES ({_id}, '{answer.option}')")
         result = sql_call(sql_query_string)
 
-    
-    
 
+@app.route("/users_counts_data")
+def get_users():
+    sql_query_string = """
+      select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
+         COUNT(CASE WHEN is_active = 0 THEN id END) AS inactive,
+		 COUNT(CASE WHEN is_admin = 0 THEN id END) AS admins,
+		 COUNT(id) as total
+    from users
+    """
 
-
-   
 
 if __name__ == '__main__':
     app.run(debug=False)
