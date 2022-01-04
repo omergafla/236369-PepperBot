@@ -1,0 +1,8 @@
+.AddAdminForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.Margin{
+  margin:2vh 0 !important;
+}

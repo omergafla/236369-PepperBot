@@ -53,7 +53,7 @@ const AddPollsForm = () => {
 
   return (
     <div className={styles.formWrap}>
-      <h1>Add New Poll</h1>
+      {/* <h1>Add New Poll</h1> */}
       <form className={styles.AddPollsForm} onSubmit={handleSubmit}>
           <TextField
               name="question"
