@@ -1,0 +1,18 @@
+.AddPollsForm {
+    width: 50%;
+    margin: auto;
+    text-align: left;
+}
+
+.formWrap{
+    text-align: center;
+    margin-top: 5vh !important;
+}
+
+.topDownMargin{
+    margin:4vh 0 !important;
+}
+
+.downMargin{
+    margin-bottom: 2vh !important;
+}

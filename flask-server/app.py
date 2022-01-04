@@ -77,6 +77,20 @@ def delete_user():
         response = app.response_class(status = 500)
     finally:
         return response
+
+@app.route("/users_counts_data")
+def get_users():
+    sql_query_string = """
+      select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
+         COUNT(CASE WHEN is_active = 0 THEN id END) AS inactive,
+		 COUNT(CASE WHEN is_admin = 0 THEN id END) AS admins,
+		 COUNT(id) as total
+    from users
+    """
+
+@app.route("/add_poll", methods = ['POST'])
+def add_poll():
+    print("hi")
  
 
 if __name__ == '__main__':
