@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+import json
 from psycopg2 import sql
 from datetime import datetime
 
@@ -19,6 +20,28 @@ import telegram_hanlder
 
 app = Flask(__name__)
 
+def map_result(obj):
+    rows = obj.rows
+    cols = obj.cols
+    res = []
+    for row in rows:
+        add_row = {}
+        for index in range(len(row)):
+            key  = obj.cols_header[index]
+            add_row[key] = row[index]
+        res.append(add_row)
+    return res
+
+def reduce_poll_data(poll):
+    res = {}
+    answers = []
+    res["id"] = poll[0]["poll_id"]
+    res["question"] = poll[0]["question"]
+    for data in poll:
+        memo = {"answer": data["option"], "counts": data["counts"]}
+        answers.append(memo)
+    res["options"] = answers
+    return res   
 
 def sql_call(sql_string):
     conn = None
@@ -65,7 +88,7 @@ def insert_user():
         response = set_active_value(effective_id, 1)
     except Exception as e:
         response = app.response_class(status = 500)
-        print(e.message)
+        print(str(e))
     finally:
         return response
 
@@ -94,14 +117,78 @@ def add_poll():
 
 @app.route("/users_counts_data")
 def get_users():
-    sql_query_string = """
-      select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
+    try:
+        sql_string = """select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
          COUNT(CASE WHEN is_active = 0 THEN id END) AS inactive,
-		 COUNT(CASE WHEN is_admin = 0 THEN id END) AS admins,
+		 COUNT(CASE WHEN is_admin = 1 THEN id END) AS admins,
 		 COUNT(id) as total
-    from users
-    """
+        from users"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        return app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+    except Exception as e:
+        print(str(e))
+        return app.response_class(status = 500)
 
+@app.route("/newest_poll")
+def get_newest_poll():
+    try:
+        sql_string = """select id, question from polls order by id desc limit 1"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        return app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+    except Exception as e:
+        print(str(e))
+        return app.response_class(status = 500)
+
+
+@app.route("/add_poll", methods = ['POST'])
+def add_poll():
+    try:
+        response = app.response_class(status = 200)
+        data = request.data
+        poll = json.loads(data)
+        time_now = datetime.now().strftime('%Y-%m-%d')
+        sql_string = "INSERT INTO polls (question, created_at) VALUES ('{question}', '{time_now}') RETURNING id".format(question = poll["question"], time_now=time_now)
+        result = sql_call(sql_string)
+        if result:
+            _id = result[0]["id"]
+            for answer in poll['answers']:
+                sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(id=_id, answer=answer["option"])
+                result = sql_call(sql_string)
+        print("Added Poll: #" + str(_id))
+    except Exception as e:
+        response = app.response_class(status = 500)
+        print(str(e))
+    finally:
+        return response
+    
+@app.route("/poll/<poll_id>")
+def get_poll(poll_id):
+    try:
+        response = app.response_class(status = 200)
+        sql_string = """select poll_id, 
+                        question,
+                        option,
+                        count(user_id) as counts
+                        from questions_and_answers where poll_id={id}
+                        group by question, option, poll_id
+                        order by counts asc""".format(id=poll_id)
+        result = reduce_poll_data(map_result(sql_call(sql_string)))
+        response = app.response_class(response=json.dumps(result),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        response = app.response_class(status = 500)
+        print(str(e))
+    finally:
+        return response
+ 
 
 if __name__ == '__main__':
     app.run(debug=False)
