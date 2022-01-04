@@ -1,3 +1,4 @@
+import styles from './AddPollsForm.module.css';
 import React, { useState } from 'react';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
@@ -6,9 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
-
-
-const CreateForm = () => {
+const AddPollsForm = () => {
   const [inputFields, setInputFields] = useState([
     { id: Math.random(), option: '' },
   ]);
@@ -53,14 +52,16 @@ const CreateForm = () => {
   };
 
   return (
-    <Container>
-      <h1>Add New Member</h1>
-      <form onSubmit={handleSubmit}>
+    <div className={styles.formWrap}>
+      {/* <h1>Add New Poll</h1> */}
+      <form className={styles.AddPollsForm} onSubmit={handleSubmit}>
           <TextField
               name="question"
-              label="Question"
-              variant="outlined"
+              label="Ask a question"
+              variant="filled"
               value={question}
+              className={styles.downMargin}
+              fullWidth
               onChange={handleQuestionChange}
             />
         {inputFields.map((inputField: { id: number; option: string; }) => (
@@ -70,28 +71,30 @@ const CreateForm = () => {
               label="Option"
               variant="filled"
               value={inputField.option}
+              fullWidth
               onChange={(event: any) => handleChangeInput(inputField.id, event)}
             />
-            <IconButton disabled={inputFields.length === 1} onClick={() => handleRemoveFields(inputField.id)}>
-              <RemoveIcon />
-            </IconButton>
-            <IconButton
-              onClick={handleAddFields}
-            >
-              <AddIcon />
-            </IconButton>
+            <div>
+              <IconButton disabled={inputFields.length === 1} onClick={() => handleRemoveFields(inputField.id)}>
+                <RemoveIcon />
+              </IconButton>
+              <IconButton onClick={handleAddFields}>
+                <AddIcon />
+              </IconButton>
+            </div>
           </div>
         ))}
         <Button
           variant="contained"
           color="primary"
           type="submit"
+          className={styles.topDownMargin}
           onClick={handleSubmit}
         >Send</Button>
       </form>
-    </Container>
+    </div>
   );
 }
 
 
-export default CreateForm;
+export default AddPollsForm;
