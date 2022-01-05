@@ -57,7 +57,7 @@ def echo(update: Update, context: CallbackContext) -> None:
 def poll(bot, question, answers, ids, poll_id):
     button_list = []
     for answer in answers:
-        detailed_answer = {"poll_id_from_db": poll_id, "answer": answer}
+        detailed_answer = {"poll_id": poll_id, "answer": answer}
         button_list.append(InlineKeyboardButton(answer, callback_data = json.dumps(detailed_answer)))
     reply_markup=InlineKeyboardMarkup(build_menu(button_list,n_cols=1)) #n_cols = 1 is for single column and mutliple rows
     for id in ids:
@@ -73,9 +73,13 @@ def build_menu(buttons,n_cols,header_buttons=None,footer_buttons=None):
 
 def handle_callback_query(update, context):
     print(json.loads(update.callback_query.data))
+    chat_id = update.callback_query.message.chat_id
+    poll_id = json.loads(update.callback_query.data)["poll_id"]
+    answer = json.loads(update.callback_query.data)["answer"]
     context.bot.send_message(chat_id=update.effective_chat.id, 
                              text='Your Answer: <b> '+update.callback_query.data+'</b>', parse_mode=telegram.ParseMode.HTML)
     update.callback_query.edit_message_reply_markup(None)
+    r = requests.post(url = 'http://localhost:5000/add_answer', data = {'chat_id': chat_id, 'poll_id': poll_id, 'answer': answer})
 
 
 def main() -> None:

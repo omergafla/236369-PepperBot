@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import requests
 import telegram
+from telegram import poll
 import utils.DBConnector as Connector
 from utils.ReturnValue import ReturnValue
 from utils.Exceptions import DatabaseException
@@ -51,6 +52,17 @@ def sql_call(sql_string):
     conn.close()
     return result_rows
 
+def get_active_users():
+    sql_string="select effective_id from users where is_active = 1"
+    users = map_result(sql_call(sql_string))
+    ids = [user['effective_id'] for user in users]
+    return ids
+
+def get_option_id(poll_id, option):
+    sql_string="select id from polls_options where poll_id = {poll_id} and option = '{option}' limit 1".format(poll_id=poll_id, option=option)
+    data = sql_call(sql_string)
+    return data[0]["id"]
+
 def set_active_value(effective_id, active):
     try:
         sql_query_string = sql.SQL(f'select * from users where is_active=1 and effective_id={effective_id}')
@@ -66,14 +78,12 @@ def set_active_value(effective_id, active):
     finally:
         return response
 
-@app.route("/")
-def home():
-    
+def send_poll(poll_id, question, answers, users=None):
     bot=telegram.Bot(token="5026396246:AAHVsBnqNR0xGLsalEFgRZMRyw2CZT1hKMo")
-    chat=869421566
-    telegram_hanlder.poll(bot, "#23 how are you?", ["good","very good"], [869421566], 23)
-    return "Hello, Flask!"
-
+    chats = []
+    if(users is None):
+        chats = get_active_users()
+    telegram_hanlder.poll(bot, question, answers, chats, poll_id)
 
 
 @app.route("/add_user", methods = ['POST'])
@@ -101,19 +111,6 @@ def delete_user():
         response = app.response_class(status = 500)
     finally:
         return response
-
-@app.route("/add_poll", methods = ['POST'])
-def add_poll():
-    data = request.data
-    poll = json.loads(data)
-    time_now = datetime.now().strftime('%Y-%m-%d')
-    sql_query_string = sql.SQL(f"INSERT INTO polls (question, created_at) VALUES ({poll.question}, '{time_now}')")
-    result = sql_call(sql_query_string)
-    _id = "1"
-    for answer in poll['answers']:
-        sql_query_string = sql.SQL(f"INSERT INTO polls_options (poll_id, option) VALUES ({_id}, '{answer.option}')")
-        result = sql_call(sql_query_string)
-
 
 @app.route("/users_counts_data")
 def get_users():
@@ -145,7 +142,6 @@ def get_newest_poll():
         print(str(e))
         return app.response_class(status = 500)
 
-
 @app.route("/add_poll", methods = ['POST'])
 def add_poll():
     try:
@@ -155,12 +151,15 @@ def add_poll():
         time_now = datetime.now().strftime('%Y-%m-%d')
         sql_string = "INSERT INTO polls (question, created_at) VALUES ('{question}', '{time_now}') RETURNING id".format(question = poll["question"], time_now=time_now)
         result = sql_call(sql_string)
+        flatten_answers=[]
         if result:
             _id = result[0]["id"]
             for answer in poll['answers']:
+                flatten_answers.append(answer["option"])
                 sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(id=_id, answer=answer["option"])
                 result = sql_call(sql_string)
-        print("Added Poll: #" + str(_id))
+            print("Added Poll: #" + str(_id))
+            send_poll(_id, poll["question"], flatten_answers)
     except Exception as e:
         response = app.response_class(status = 500)
         print(str(e))
@@ -189,6 +188,19 @@ def get_poll(poll_id):
     finally:
         return response
  
+@app.route("/add_answer", methods = ['POST'])
+def add_answer():
+    try:
+        chat_id, poll_id, answer = request.form["chat_id"], request.form["poll_id"], request.form["answer"]
+        option_id = get_option_id(poll_id, answer)
+        sql_query_string = sql.SQL(f"INSERT INTO users_answers (user_id, poll_id, option_id) VALUES ({chat_id}, '{poll_id}', '{option_id}')")
+        result = sql_call(sql_query_string)
+        response = app.response_class(status = 200)
+    except Exception as e:
+        response = app.response_class(status = 500)
+        print(str(e))
+    finally:
+        return response
 
 if __name__ == '__main__':
     app.run(debug=False)
