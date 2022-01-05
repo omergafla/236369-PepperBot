@@ -5,7 +5,7 @@ import BasicGrid from '../BasicGrid/BasicGrid';
 
 
 const Home = () => (
-  <div>
+  <div className={styles.Home}>
     <TopMenu />
     <BasicGrid />
   </div>

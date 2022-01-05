@@ -2,52 +2,27 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import BasicCard from '../Cards/BasicCard/BasicCard';
+import styles from './BasicGrid.module.css'
 
 
 export default function BasicGrid(props: any) {
   const { size } = props;
-
-  const topInfoCards = (
-  <Grid container justifyContent="center" spacing={3}>
-    <Grid key={1} item xs={2}>
-      <BasicCard data={"89"} label={"Users"} />
-    </Grid>
-    <Grid key={2} item xs={2}>
-      <BasicCard data={"80"} label={"Active Users"} />
-    </Grid>
-    <Grid key={3} item xs={2}>
-      <BasicCard data={"29"} label={"Polls"} />
-    </Grid>
-    <Grid key={4} item xs={2}>
-      <BasicCard data={"4"} label={"New Polls Today"} />
-    </Grid>
-    <Grid key={5} item xs={2}>
-      <BasicCard data={"3"} label={"Admins"} />
-    </Grid>
-    <Grid key={6} item xs={2}>
-      <BasicCard data={"70"} label={"Active Users Today"} />
-    </Grid>
-  </Grid>
-  )
-
-  const secondRow = (
-  <Grid container justifyContent="center" spacing={3}>
-    <Grid key={7} item xs={6}>
-      <BasicCard data={"#23 How are you?"} />
-    </Grid>
-    <Grid key={8} item xs={6}>
-      <BasicCard data={"#45 Where is the best pizza in Haifa?"} />
-    </Grid>
-  </Grid>
-  )
-
-
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid item xs={12}>
-        {topInfoCards}
-        {secondRow}
-      </Grid>
-    </Box>
+    <div className={styles.dashboard}>
+        <div className={styles.div1}> <BasicCard data={"89"} label={"Users"} /> </div>
+        <div className={styles.div2}> <BasicCard data={"80"} label={"Active Users"} /></div>
+        <div className={styles.div3}> <BasicCard data={"29"} label={"Polls"} /></div>
+        <div className={styles.div4}> <BasicCard data={"4"} label={"New Polls Today"} /></div>
+        <div className={styles.div5}> <BasicCard data={"3"} label={"Admins"} /></div>
+        <div className={styles.div6}> <BasicCard data={"70"} label={"Active Users Today"} /></div>
+        <div className={styles.div7}> <BasicCard data={"#23 How are you?"} /></div>
+        <div className={styles.div8}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /></div>
+        <div className={styles.div9}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /></div>
+        <div className={styles.div10}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /> </div>
+        <div className={styles.div11}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /> </div>
+        <div className={styles.div12}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /> </div>
+        <div className={styles.div13}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /> </div>
+        <div className={styles.div14}> <BasicCard data={"#45 Where is the best pizza in Haifa?"} /> </div>
+    </div>
   );
 }
