@@ -23,7 +23,7 @@ const TopMenu = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} className="full-width">
       <AppBar position="sticky" style={{ background: "#2E3B55" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

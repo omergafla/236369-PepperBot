@@ -122,12 +122,81 @@ def get_users():
         from users"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
-        return app.response_class(response=json.dumps(result[0]),
+        response = app.response_class(response=json.dumps(result[0]),
                                   status=200,
                                   mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
         print(str(e))
-        return app.response_class(status = 500)
+        response = app.response_class(status = 500)
+    finally:
+        return response
+
+@app.route("/polls_counts")
+def get_polls():
+    try:
+        sql_string = """select COUNT(id) as total from polls"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status = 500)
+    finally:
+        return response
+
+@app.route("/admins_counts")
+def get_admins():
+    try:
+        sql_string = """select COUNT(id) as total from users where is_admin = 1"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status = 500)
+    finally:
+        return response
+
+
+@app.route("/today_polls")
+def today_polls():
+    try:
+        sql_string = """select count(*) as total from polls where DATE(created_at) >= CURRENT_DATE"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status = 500)
+    finally:
+        return response
+
+
+@app.route("/acctive_users_today")
+def active_users_today():
+    try:
+        sql_string = """select count(distinct user_id) as total from users_answers where poll_id in (select id from polls where DATE(created_at) >= CURRENT_DATE)"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status = 500)
+    finally:
+        return response
 
 @app.route("/newest_poll")
 def get_newest_poll():
@@ -135,12 +204,95 @@ def get_newest_poll():
         sql_string = """select id, question from polls order by id desc limit 1"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
-        return app.response_class(response=json.dumps(result[0]),
+        response = app.response_class(response=json.dumps(result[0]),
                                   status=200,
                                   mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
         print(str(e))
         return app.response_class(status = 500)
+    finally:
+        return response
+
+@app.route("/most_popular_poll")
+def get_popular_poll():
+    try:
+        sql_string = """select poll_id, question
+         from (select count(poll_id) as total, poll_id from questions_and_answers group by poll_id order by total desc limit 1)t
+        left join polls on t.poll_id = polls.id"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result[0]),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        return app.response_class(status = 500)
+    finally:
+        return response
+
+@app.route("/daily_users")
+def daily_users():
+    try:
+        sql_string = """SELECT date, COUNT(DISTINCT id) AS new_users
+                        FROM (VALUES
+                            (CAST(CURRENT_DATE - 0 AS DATE)),
+                            (CAST(CURRENT_DATE - 1 AS DATE)), -- build the list of dates
+                            (CAST(CURRENT_DATE - 2 AS DATE)),
+                            (CAST(CURRENT_DATE - 3 AS DATE)),
+                            (CAST(CURRENT_DATE - 4 AS DATE)),
+                            (CAST(CURRENT_DATE - 5 AS DATE)),
+                            (CAST(CURRENT_DATE - 6 AS DATE))  
+                        ) datelist(date)
+                        LEFT JOIN users ON created_at = date
+                        GROUP BY date
+                        ORDER BY date ASC"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        for r in result:
+            r["date"] = str(r["date"])
+        response = app.response_class(response=json.dumps(result),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        return app.response_class(status = 500)
+    finally:
+        return response
+
+
+@app.route("/daily_polls")
+def daily_polls():
+    try:
+        sql_string = """SELECT date, COUNT(DISTINCT id) AS new_polls
+                        FROM (VALUES
+                            (CAST(CURRENT_DATE - 0 AS DATE)),
+                            (CAST(CURRENT_DATE - 1 AS DATE)), -- build the list of dates
+                            (CAST(CURRENT_DATE - 2 AS DATE)),
+                            (CAST(CURRENT_DATE - 3 AS DATE)),
+                            (CAST(CURRENT_DATE - 4 AS DATE)),
+                            (CAST(CURRENT_DATE - 5 AS DATE)),
+                            (CAST(CURRENT_DATE - 6 AS DATE))  
+                        ) datelist(date)
+                        LEFT JOIN polls ON created_at = date
+                        GROUP BY date
+                        ORDER BY date ASC"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        for r in result:
+            r["date"] = str(r["date"])
+        response = app.response_class(response=json.dumps(result),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        return app.response_class(status = 500)
+    finally:
+        return response
+
 
 @app.route("/add_poll", methods = ['POST'])
 def add_poll():
