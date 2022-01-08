@@ -1,9 +1,9 @@
-from flask import Flask
-from flask import request
+from flask import Flask, request, jsonify
 import json
 from psycopg2 import sql
-from datetime import datetime
-
+from datetime import datetime, timedelta, timezone
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
+                               unset_jwt_cookies, jwt_required, JWTManager
 import json
 import requests
 import telegram
@@ -13,13 +13,16 @@ from utils.ReturnValue import ReturnValue
 from utils.Exceptions import DatabaseException
 from telegram import Update, ForceReply, ParseMode, Poll
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, updater, CallbackQueryHandler
-import requests
 from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
 from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
 import telegram_hanlder
+from passlib.apps import custom_app_context as pwd_context
 
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+jwt = JWTManager(app)
 
 def map_result(obj):
     rows = obj.rows
@@ -202,8 +205,58 @@ def add_answer():
     finally:
         return response
 
+def hash_password(password):
+        return pwd_context.encrypt(password)
+
+def verify_password(password, password_hash):
+    return pwd_context.verify(password, password_hash)
+
+
+####################################Authentication Routes###################################
+@app.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
+
+@app.route('/token', methods=["POST"])
+def create_token():
+    username = json.loads(request.data)["username"]
+    password = json.loads(request.data)["password"] 
+    if username is None or password is None:
+        abort(400) # missing arguments
+    if username != 'q':
+    #check if admin already registered
+    #get username from db, verify it exists, and get his password then verify_password
+    #in case username/password incorrect:
+        return {"msg": "Wrong email or password"}, 401
+    access_token = create_access_token(identity=username)
+    response = app.response_class(response=json.dumps({"access_token":access_token}),
+                                status=200,
+                                mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
+
+@app.route("/")
+@jwt_required()
+def somefunc():
+    response = app.response_class(status=200)
+    return response
+
+
 if __name__ == '__main__':
     app.run(debug=False)
 
-#TODO: filter by poll Id(?) + answer Id
-#TODO: Autehntication

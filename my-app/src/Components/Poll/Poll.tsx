@@ -23,6 +23,7 @@ const Poll = () => {
     const params = {
       method: 'GET'
     }
+    //the default is get so you can drop the params if you want
     fetch(`http://localhost:5000/poll/${id}`, params)
       .then((res) => res.json())
       .then((data) => setPoll(data));
