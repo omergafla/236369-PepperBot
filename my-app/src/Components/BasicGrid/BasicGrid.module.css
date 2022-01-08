@@ -3,10 +3,10 @@
 .dashboard {
         display: grid !important;
         grid-template-columns: repeat(6, 1fr) !important;
-        grid-template-rows: repeat(7, 1fr) !important;
+        /* grid-template-rows: repeat(7, 1fr) !important; */
         grid-column-gap: 2vw !important;
         grid-row-gap: 3vh !important;
-        width: 90%;
+        width: 80%;
         margin: auto;
         margin-top: 4vh;
         padding-bottom: 6vh;

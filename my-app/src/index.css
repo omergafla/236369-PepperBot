@@ -1,6 +1,8 @@
 html {
   height: 100%;
-  background-color: rgb(198, 208, 218);
+  width: 100vw;
+  overflow-x: hidden;
+  /* background-color: rgb(198, 208, 218); */
 }
 
 body {
@@ -10,6 +12,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
   
 }
 

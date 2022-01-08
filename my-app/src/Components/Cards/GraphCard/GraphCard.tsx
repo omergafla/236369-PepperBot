@@ -10,14 +10,14 @@ import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Resp
 export default function (props: any) {
   const { loading, label, xAxis, yAxis, data } = props;
   return (
-  <Card sx={{borderRadius: "16px"}} className={styles.GraphCard}>
-      <CardContent>
+  <div className={styles.GraphCard}>
+      <div>
         <Typography variant="h6" component="div" align="center">
           {label}
         </Typography>
         <div>
         {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) : 
-        <ResponsiveContainer width="95%" height={400} className={styles.Container}>
+        <ResponsiveContainer width="95%" height={300} className={styles.Container}>
           <BarChart className={styles.skewLeft}
           margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
           data={data}>
@@ -31,8 +31,8 @@ export default function (props: any) {
         </ResponsiveContainer>
         }
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 

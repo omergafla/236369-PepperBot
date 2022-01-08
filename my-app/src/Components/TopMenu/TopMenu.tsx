@@ -17,14 +17,14 @@ const TopMenu = () => {
   }
 
   const buttonStyle = {
-    color: "white",
-    backgroundColor: "#AAAA",
+    color: "#8884d8",
+    backgroundColor: "white",
     marginRight: "2vh"
   };
 
   return (
     <Box sx={{ flexGrow: 1 }} className="full-width">
-      <AppBar position="sticky" style={{ background: "#2E3B55" }}>
+      <AppBar position="sticky" style={{ background: "#8884d8" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Welcome Admin!

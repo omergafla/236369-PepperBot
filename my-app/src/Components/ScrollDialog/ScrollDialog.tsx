@@ -40,8 +40,8 @@ export default function ScrollDialog(props: any) {
   }, [open]);
 
   const buttonStyle = {
-    color: "white",
-    backgroundColor: "#AAAA",
+    color: "#8884d8",
+    backgroundColor: "#FFF",
     marginRight: "2vh"
   };
 

@@ -4,21 +4,22 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import styles from './BasicCard.module.css'
 import { useState } from 'react';
+import { style } from '@mui/system';
 
 
 export default function BasicCard(props: any) {
-  const { label, data, loading } = props;
+  const { backColor, label, data, loading } = props;
 
   return (
-    <Card className={styles.BasicCard} sx={{borderRadius: "16px"}}>
-      <CardContent>
-        <Typography variant="h6" component="div" align="center">
+    <div className={styles.BasicCard} style={{background: backColor}} >
+      <div className={styles.wrap}>
+        <div className={styles.label_settings}>
           {label}
-        </Typography>
-        <Typography variant="h5" component="div" align="center" gutterBottom>
+        </div>
+        <div className={styles.data_settings}>
           {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) : data}
-        </Typography>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 }

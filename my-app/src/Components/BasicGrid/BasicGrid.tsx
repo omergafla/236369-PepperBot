@@ -6,6 +6,7 @@ import styles from './BasicGrid.module.css'
 import { useEffect, useState } from 'react';
 import PollCard from '../Cards/PollCard/PollCard';
 import GraphCard from '../Cards/GraphCard/GraphCard';
+import PieCard from '../Cards/PieCard/PieCard';
 
 export interface Iloaders{
   [key: string]: boolean;
@@ -23,6 +24,10 @@ export interface IdailyUser{
 export interface IdailyPoll{
   date?: string;
   new_polls?: number;
+}
+export interface IUsersRatio{
+  active?: number;
+  inactive?: number;
 }
 
 export default function BasicGrid(props: any) {
@@ -56,6 +61,7 @@ export default function BasicGrid(props: any) {
   const [newestPoll, setNewestPoll] = useState<Ipoll>({})
   const [dailyUsers, setDailyUsers] = useState<IdailyUser[]>([{}])
   const [dailyPolls, setDailyPolls] = useState<IdailyPoll[]>([{}])
+  const [usersRatio, setUsersRatio] = useState<IUsersRatio>({})
 
   useEffect(() =>{
     // GET USERS, USERS_ACTIVE
@@ -68,9 +74,11 @@ export default function BasicGrid(props: any) {
       .then((data) => {
         setUsers(data["total"]);
         setActiveUsers(data["active"]);
+        setUsersRatio({"active": data["active"], "inactive": data["inactive"]})
       });
       loaders["users"] = false;
       loaders["active_users"] = false;
+      loaders["active_users_ratio"] = false;
       setLoaders(loaders);
   },[]);
 
@@ -199,20 +207,20 @@ export default function BasicGrid(props: any) {
 
   return (
     <div className={styles.dashboard}>
-        <div className={styles.div1}> <BasicCard loading={loaders.users} data={users} label={"Users"} /> </div>
-        <div className={styles.div2}> <BasicCard loading={loaders.active_users} data={activeUsers} label={"Active Users"} /></div>
-        <div className={styles.div3}> <BasicCard loading={loaders.polls} data={polls} label={"Polls"} /></div>
-        <div className={styles.div4}> <BasicCard loading={loaders.today_polls} data={todayPolls} label={"New Polls Today"} /></div>
-        <div className={styles.div5}> <BasicCard loading={loaders.admins} data={admins} label={"Admins"} /></div>
-        <div className={styles.div6}> <BasicCard loading={loaders.active_users_today} data={activeUsersToday} label={"Active Users Today"} /></div>
+        <div className={styles.div1}> <BasicCard backColor={"#FDCACE"} loading={loaders.users} data={users} label={"Users"} /> </div>
+        <div className={styles.div2}> <BasicCard backColor={"#FEF1EB"} loading={loaders.active_users} data={activeUsers} label={"Active Users"} /></div>
+        <div className={styles.div3}> <BasicCard backColor={"#D2E6D5"} loading={loaders.polls} data={polls} label={"Polls"} /></div>
+        <div className={styles.div4}> <BasicCard backColor={"#D5C5E8"} loading={loaders.today_polls} data={todayPolls} label={"New Polls Today"} /></div>
+        <div className={styles.div5}> <BasicCard backColor={"#FBE7C5"} loading={loaders.admins} data={admins} label={"Admins"} /></div>
+        <div className={styles.div6}> <BasicCard backColor={"#F7D3BC"} loading={loaders.active_users_today} data={activeUsersToday} label={"Active Users Today"} /></div>
         <div className={styles.div7}> <PollCard loading={loaders.popular_poll} poll_question={popularPoll.question} poll_id={popularPoll.id} label={"Most Popular Poll"}/></div>
         <div className={styles.div8}> <PollCard loading={loaders.newest_poll} poll_question={newestPoll.question} poll_id={newestPoll.id} label={"Newest Poll"} /></div>
         <div className={styles.div9}> <GraphCard loading={loaders.daily_users} data={dailyUsers} xAxis={"date"} yAxis={"new_users"}  label={"New Users per Day"}/></div>
         <div className={styles.div10}> <GraphCard loading={loaders.daily_polls} data={dailyPolls} xAxis={"date"} yAxis={"new_polls"} label={"New Polls per Day"}/></div>
-        <div className={styles.div11}> <BasicCard loading={loaders.active_users_ratio} data={"#45 Where is the best pizza in Haifa?"} label={"Active Users Ratio"}/>  </div>
-        <div className={styles.div12}> <BasicCard loading={loaders.most_answered_polls} data={"#45 Where is the best pizza in Haifa?"} label={"Most Popular Polls"}/> </div>
+        <div className={styles.div11}> <PieCard loading={loaders.active_users_ratio} active={usersRatio.active} inactive={usersRatio.inactive} label={"Active Users Ratio"}/>  </div>
+        {/* <div className={styles.div12}> <BasicCard loading={loaders.most_answered_polls} data={"#45 Where is the best pizza in Haifa?"} label={"Most Popular Polls"}/> </div>
         <div className={styles.div13}> <BasicCard loading={loaders.admins_compare} data={"#45 Where is the best pizza in Haifa?"} label={"Admins Activity"}/> </div>
-        <div className={styles.div14}> <BasicCard loading={loaders.most_clear} data={"#45 Where is the best pizza in Haifa?"} label={"Easiest Decision"}/> </div>
+        <div className={styles.div14}> <BasicCard loading={loaders.most_clear} data={"#45 Where is the best pizza in Haifa?"} label={"Easiest Decision"}/> </div> */}
 
     </div>
   );
