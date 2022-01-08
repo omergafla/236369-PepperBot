@@ -7,26 +7,14 @@ import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
-const AddPollsForm = () => {
-  const [inputFields, setInputFields] = useState([
-    { id: Math.random(), option: '' },
-  ]);
-  const [question, setQuestion] = useState("")
+const AddPollsForm = (props: any) => {
+  const {inputFields, setInputFields, question, setQuestion } = props;
+  // const [inputFields, setInputFields] = useState([
+  //   { id: Math.random(), option: '' },
+  // ]);
+  // const [question, setQuestion] = useState("")
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-
-    const result = {'question': question, 'answers': inputFields} 
-    const params = {
-      method: 'POST',
-      body: JSON.stringify(result)
-    }
-    
-    fetch("http://localhost:5000/add_poll", params)
-
-  };
-
-  const handleChangeInput = (id: number, event: any) => {
+   const handleChangeInput = (id: number, event: any) => {
     const newInputFields = inputFields.map((i: any) => {
       if (id === i.id) {
         i[event.target.name] = event.target.value
@@ -54,7 +42,7 @@ const AddPollsForm = () => {
   return (
     <div className={styles.formWrap}>
       {/* <h1>Add New Poll</h1> */}
-      <form className={styles.AddPollsForm} onSubmit={handleSubmit}>
+      <form className={styles.AddPollsForm}>
           <TextField
               name="question"
               label="Ask a question"
@@ -84,13 +72,13 @@ const AddPollsForm = () => {
             </div>
           </div>
         ))}
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           type="submit"
           className={styles.topDownMargin}
           onClick={handleSubmit}
-        >Send</Button>
+        >Send</Button> */}
       </form>
     </div>
   );

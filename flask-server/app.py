@@ -132,6 +132,25 @@ def get_users():
     finally:
         return response
 
+@app.route("/polls")
+def get_all_polls():
+    try:
+        sql_string = """select id, question, created_by, created_at from polls"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        for r in result:
+            r["created_at"] = str(r["created_at"])
+        result = {"result" : result}
+        response = app.response_class(response=json.dumps(result),
+                                  status=200,
+                                  mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status = 500)
+    finally:
+        return response
+
 @app.route("/polls_counts")
 def get_polls():
     try:

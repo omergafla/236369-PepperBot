@@ -5,6 +5,7 @@ import './App.css';
 import AddPollsForm from './Components/Forms/AddPollsForm/AddPollsForm';
 import Home from './Components/Home/Home'
 import Poll from './Components/Poll/Poll';
+import Polls from './Components/Polls/Polls';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/polls/:id" element={<Poll/>}/>
+          <Route path="/polls" element={<Polls/>}/>
         </Routes>
     </Router>
   );

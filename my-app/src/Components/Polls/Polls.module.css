@@ -1,0 +1,19 @@
+.Poll {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+  .App-logo {
+    height: 40vmin;
+    pointer-events: none;
+  }
+  
+.wrap{
+  height: 74vh;
+  width: 80vw;
+  padding-bottom: 10vh;
+}

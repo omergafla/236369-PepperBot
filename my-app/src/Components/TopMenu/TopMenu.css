@@ -6,3 +6,19 @@
 .full-width{
   width: 100vw;
 }
+
+.pepper{
+  border-radius: 20px;
+  margin-right: 1vw;
+  border:2px solid white;
+  transition: 0.5s all ease-in-out;
+}
+
+.pepper:hover{
+  transform: rotateZ(360deg);
+  /* border:2px solid red; */
+}
+
+a{
+  text-decoration: none;
+}
