@@ -10,7 +10,7 @@ import AddPollsForm from '../Forms/AddPollsForm/AddPollsForm';
 import AddAdminForm from '../Forms/AddAdminForm/AddAdminForm';
 
 export default function ScrollDialog(props: any) {
-  const { title, buttonText, actionType, component } = props;
+  const { title, buttonText, actionType, component, poll_id, answer } = props;
   const [open, setOpen] = React.useState(false);
   const [inputFields, setInputFields] = useState([
     { id: Math.random(), option: '' },
@@ -31,12 +31,22 @@ export default function ScrollDialog(props: any) {
 
     }
     if (actionType === "poll") {
-      const result = {'question': question, 'answers': inputFields} 
+      if(poll_id && answer){
+      const result = {'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer':answer} 
       const params = {
         method: 'POST',
         body: JSON.stringify(result)
       }
-      fetch("http://localhost:5000/add_poll", params)
+      fetch("http://localhost:5000/add_sub_poll", params)
+      }
+      else{
+        const result = {'question': question, 'answers': inputFields} 
+        const params = {
+          method: 'POST',
+          body: JSON.stringify(result)
+        }
+        fetch("http://localhost:5000/add_poll", params)
+      }
     }
     setOpen(false);
   };
@@ -77,7 +87,7 @@ export default function ScrollDialog(props: any) {
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-            {component == "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields}/>) 
+            {component == "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields} poll_id={poll_id} answer={answer}/>) 
             : (<AddAdminForm/>)
             }
           </DialogContentText>

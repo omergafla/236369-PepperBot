@@ -97,7 +97,7 @@ export default function (props: any) {
   return (
   <div className={styles.PieCard}>
       <div>
-        <Typography variant="h6" component="div" align="center">
+        <Typography variant="h6" component="div" align="center" className={styles.pushDown}>
           {label}
         </Typography>
         <div>

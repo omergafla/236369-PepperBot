@@ -63,6 +63,12 @@ def get_option_id(poll_id, option):
     data = sql_call(sql_string)
     return data[0]["id"]
 
+def get_users_for_sub_poll(permission):
+    sql_string="select distinct user_id from users_answers where option_id={permission}".format(permission=permission)
+    users = map_result(sql_call(sql_string))
+    ids = [user['user_id'] for user in users]
+    return ids
+
 def set_active_value(effective_id, active):
     try:
         sql_query_string = sql.SQL(f'select * from users where is_active=1 and effective_id={effective_id}')
@@ -331,6 +337,32 @@ def add_poll():
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             send_poll(_id, poll["question"], flatten_answers)
+    except Exception as e:
+        response = app.response_class(status = 500)
+        print(str(e))
+    finally:
+        return response
+
+@app.route("/add_sub_poll", methods = ['POST'])
+def add_sub_poll():
+    try:
+        response = app.response_class(status = 200)
+        data = request.data
+        poll = json.loads(data)
+        time_now = datetime.now().strftime('%Y-%m-%d')
+        permission = get_option_id(poll["poll_id"], poll["answer"])
+        sql_string = "INSERT INTO polls (question, permission, created_at) VALUES ('{question}', {permission}, '{time_now}') RETURNING id".format(question = poll["question"], permission=permission, time_now=time_now)
+        result = sql_call(sql_string)
+        flatten_answers=[]
+        if result:
+            _id = result[0]["id"]
+            for answer in poll['answers']:
+                flatten_answers.append(answer["option"])
+                sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(id=_id, answer=answer["option"])
+                result = sql_call(sql_string)
+            print("Added Poll: #" + str(_id))
+            users = get_users_for_sub_poll(permission)
+            send_poll(_id, poll["question"], flatten_answers, users)
     except Exception as e:
         response = app.response_class(status = 500)
         print(str(e))
