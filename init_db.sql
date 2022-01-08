@@ -42,3 +42,12 @@ CREATE TABLE IF NOT EXISTS Users_Answers
     FOREIGN KEY (poll_id) REFERENCES Polls(ID),
 	FOREIGN KEY (option_id) REFERENCES Polls_Options(ID)
 );
+
+CREATE TABLE IF NOT EXISTS Admins
+(
+    ID SERIAL,
+    username VARCHAR(50),
+	password VARCHAR(50),
+    PRIMARY KEY (ID),
+    UNIQUE (username)
+);

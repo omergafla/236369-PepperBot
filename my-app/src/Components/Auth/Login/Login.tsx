@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import styles from './Login.module.css';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+
 
 function Login(props: any) {
 
@@ -7,7 +14,22 @@ function Login(props: any) {
     password: ""
   })
 
+  const [error, setError] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState("");
+
+
+  function validateForm() {
+    return loginForm.username.length > 0 && loginForm.password.length > 0;
+  }
+
   function logMeIn(event: any) {
+    if (validateForm() === false) {
+      setError(true);
+      setMsg("Username or password can't be empty");
+      setOpen(true);
+      return;
+    }
     const data = {
       username: loginForm.username,
       password: loginForm.password
@@ -17,10 +39,19 @@ function Login(props: any) {
       body: JSON.stringify(data)
     })
       .then((response) => {
-        return response.json()
+        if (response.status === 200)
+          return response.json()
+        else if (response.status === 401){
+          setOpen(true);
+          setError(true);
+          setMsg("Username or password is inccorect, please try again");
+          return;
+        }
       }).then((data) => {
         props.setToken(data.access_token)
+
       }).catch((error) => {
+        // Do somethong else here!
         if (error.response) {
           console.log(error.response)
           console.log(error.response.status)
@@ -36,32 +67,33 @@ function Login(props: any) {
   }
 
   function handleChange(event: any) {
-    const { value, name } = event.target
+    setError(false);
+    const { value, id } = event.target
     setloginForm(prevNote => ({
-      ...prevNote, [name]: value
+      ...prevNote, [id]: value
     })
     )
   }
 
-  return (
-    <div>
-      <h1>Login</h1>
-      <form className="login">
-        <input onChange={handleChange}
-          type="text"
-          name="username"
-          placeholder="User Name"
-          value={loginForm.username} />
-        <input onChange={handleChange}
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={loginForm.password} />
+  function handleClose() {
+    setOpen(false);
+  }
 
-        <button onClick={logMeIn}>Submit</button>
-      </form>
+  return (
+    <div className={styles.Login}>
+      <Box className={styles.box}>
+        <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
+        <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
+        <Button onClick={logMeIn} variant="contained">Login</Button>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity={"error"} sx={{ width: '100%' }}>
+            {msg}
+          </Alert>
+        </Snackbar>
+      </Box>
     </div>
   );
+
 }
 
 export default Login;

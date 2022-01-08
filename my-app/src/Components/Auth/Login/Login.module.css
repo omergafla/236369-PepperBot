@@ -1,1 +1,25 @@
-.Login {}
+.Login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px !important;
+  border-radius: 12px;
+  background-color: white;
+  width:fit-content;
+  height:20%;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+
+
+.Margin {
+  margin: 2vh 0 !important;
+}

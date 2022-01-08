@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+
 import json
 from psycopg2 import sql
 from datetime import datetime, timedelta, timezone
@@ -20,6 +22,7 @@ from passlib.apps import custom_app_context as pwd_context
 
 
 app = Flask(__name__)
+cors = CORS(app)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
@@ -232,11 +235,15 @@ def create_token():
     password = json.loads(request.data)["password"] 
     if username is None or password is None:
         abort(400) # missing arguments
-    if username != 'q':
-    #check if admin already registered
-    #get username from db, verify it exists, and get his password then verify_password
-    #in case username/password incorrect:
-        return {"msg": "Wrong email or password"}, 401
+    sql_string = f"""select username, password from admins where username='{username}'"""
+    result = sql_call(sql_string)
+    result_dict = map_result(result)[0]
+    if len(result.rows) != 1: # admin doesnt exist
+        return app.response_class(status=401)
+    # correct_password = verify_password(password,result_dict["password"])
+    correct_password = password == result_dict["password"] #change this once the passwords are hashed
+    if correct_password == False: # wrong password
+        return app.response_class(status=401)
     access_token = create_access_token(identity=username)
     response = app.response_class(response=json.dumps({"access_token":access_token}),
                                 status=200,
@@ -252,6 +259,7 @@ def logout():
 
 @app.route("/")
 @jwt_required()
+@cross_origin()
 def somefunc():
     response = app.response_class(status=200)
     return response
