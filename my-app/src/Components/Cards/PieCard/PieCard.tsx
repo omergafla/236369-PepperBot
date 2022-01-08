@@ -43,7 +43,7 @@ const renderActiveShape = (props: any) => {
         outerRadius={outerRadius}
         startAngle={startAngle}
         endAngle={endAngle}
-        fill={fill}
+        fill={"#6360a8"}
       />
       <Sector
         cx={cx}
@@ -52,7 +52,7 @@ const renderActiveShape = (props: any) => {
         endAngle={endAngle}
         innerRadius={outerRadius + 6}
         outerRadius={outerRadius + 10}
-        fill={fill}
+        fill={"#6360a8"}
       />
       <path
         d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
@@ -82,8 +82,8 @@ const renderActiveShape = (props: any) => {
 export default function (props: any) {
   const { loading, label, active, inactive } = props;
   const data = [
-    { name: "Inactive", value: active },
-    { name: "Acvite", value: inactive }
+    { name: "Inactive", value: inactive },
+    { name: "Acvite", value: active }
   ];
   const [activeIndex, setActiveIndex] = useState(0);
   const onPieEnter = useCallback(
