@@ -1,3 +1,26 @@
 .BasicCard {
-  margin: 3vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 15vh;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px !important;
+  border-radius: 16px;
+}
+
+.wrap{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2vh 0;
+}
+
+.label_settings{
+  font-size: small;
+}
+
+.data_settings{
+  font-size: 170%;
+  font-weight: 600;
 }

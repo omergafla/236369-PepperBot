@@ -3,8 +3,6 @@ CREATE TABLE IF NOT EXISTS Users
     ID SERIAL,
     effective_id integer NOT NULL,
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50),
-    is_admin integer DEFAULT 0,
     is_active integer DEFAULT 1,
     created_at date,
     PRIMARY KEY (ID),
@@ -15,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Polls
 (
     ID SERIAL,
     question VARCHAR(50) NOT NULL,
-    permissions text DEFAULT '*',
+    permission integer,
     created_by integer,
     created_at date,
     PRIMARY KEY (ID),
@@ -51,3 +49,13 @@ CREATE TABLE IF NOT EXISTS Admins
     PRIMARY KEY (ID),
     UNIQUE (username)
 );
+
+CREATE OR REPLACE VIEW questions_and_answers
+ AS
+ SELECT p.id AS poll_id,
+    p.question,
+    po.option,
+    ua.user_id
+   FROM polls p
+     LEFT JOIN polls_options po ON p.id = po.poll_id
+     JOIN users_answers ua ON ua.poll_id = p.id AND ua.option_id = po.id;

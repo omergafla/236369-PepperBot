@@ -5,10 +5,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useState } from 'react';
+import AddPollsForm from '../Forms/AddPollsForm/AddPollsForm';
+import AddAdminForm from '../Forms/AddAdminForm/AddAdminForm';
 
 export default function ScrollDialog(props: any) {
-  const { title, buttonText, actionType, component } = props;
+  const { title, buttonText, actionType, component, poll_id, answer } = props;
   const [open, setOpen] = React.useState(false);
+  const [inputFields, setInputFields] = useState([
+    { id: Math.random(), option: '' },
+  ]);
+  const [question, setQuestion] = useState("")
+  
 
   const handleOpen = () => {
     setOpen(true);
@@ -19,13 +27,28 @@ export default function ScrollDialog(props: any) {
   };
 
   const handleSubmit = () => {
-    setOpen(false);
     if (actionType === "admin") {
 
     }
     if (actionType === "poll") {
-
+      if(poll_id && answer){
+      const result = {'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer':answer} 
+      const params = {
+        method: 'POST',
+        body: JSON.stringify(result)
+      }
+      fetch("http://localhost:5000/add_sub_poll", params)
+      }
+      else{
+        const result = {'question': question, 'answers': inputFields} 
+        const params = {
+          method: 'POST',
+          body: JSON.stringify(result)
+        }
+        fetch("http://localhost:5000/add_poll", params)
+      }
     }
+    setOpen(false);
   };
 
 
@@ -40,8 +63,8 @@ export default function ScrollDialog(props: any) {
   }, [open]);
 
   const buttonStyle = {
-    color: "white",
-    backgroundColor: "#AAAA",
+    color: "#8884d8",
+    backgroundColor: "#FFF",
     marginRight: "2vh"
   };
 
@@ -64,7 +87,9 @@ export default function ScrollDialog(props: any) {
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-            {component}
+            {component == "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields} poll_id={poll_id} answer={answer}/>) 
+            : (<AddAdminForm/>)
+            }
           </DialogContentText>
         </DialogContent>
         <DialogActions>

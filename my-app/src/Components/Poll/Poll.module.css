@@ -1,1 +1,10 @@
-.Poll {}
+.Poll {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.question{
+    margin:7vh 0;
+}

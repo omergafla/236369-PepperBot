@@ -25,21 +25,23 @@ const TopMenu = (props: any) => {
 
 
   const buttonStyle = {
-    color: "white",
-    backgroundColor: "#AAAA",
+    color: "#8884d8",
+    backgroundColor: "white",
     marginRight: "2vh"
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" style={{ background: "#2E3B55" }}>
+    <Box sx={{ flexGrow: 1 }} className="full-width">
+      <AppBar position="sticky" style={{ background: "#8884d8" }}>
         <Toolbar>
+          <a href="/"><img className="pepper" src={require('./pepper.jpeg')} height="40px"></img></a>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Welcome Admin!
           </Typography>
           <div className="top-menu-buttons">
-            <ScrollDialog title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} component={<AddPollsForm />} />
-            <ScrollDialog title={"Add New Admin To The System"} buttonText={"Add Admin"} actionType={"admin"} component={<AddAdminForm />} />
+            <a href="/polls"><Button style={buttonStyle} variant="contained">Polls</Button></a>
+            <ScrollDialog title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} component={"poll"}/>
+            <ScrollDialog title={"Add New Admin To The System"} buttonText={"Add Admin"} actionType={"admin"} component={"admin"}/>
             <Button style={buttonStyle} variant="contained" onClick={handleLogout}>Logout</Button>
           </div>
         </Toolbar>
