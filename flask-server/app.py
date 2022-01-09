@@ -89,6 +89,8 @@ def send_poll(poll_id, question, answers, users=None):
     chats = []
     if(users is None):
         chats = get_active_users()
+    else:
+        chats = users
     telegram_hanlder.poll(bot, question, answers, chats, poll_id)
 
 
