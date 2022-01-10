@@ -9,10 +9,6 @@ import AddIcon from '@mui/icons-material/Add';
 
 const AddPollsForm = (props: any) => {
   const {inputFields, setInputFields, question, setQuestion } = props;
-  // const [inputFields, setInputFields] = useState([
-  //   { id: Math.random(), option: '' },
-  // ]);
-  // const [question, setQuestion] = useState("")
 
    const handleChangeInput = (id: number, event: any) => {
     const newInputFields = inputFields.map((i: any) => {
@@ -41,7 +37,6 @@ const AddPollsForm = (props: any) => {
 
   return (
     <div className={styles.formWrap}>
-      {/* <h1>Add New Poll</h1> */}
       <form className={styles.AddPollsForm}>
           <TextField
               name="question"
@@ -72,13 +67,6 @@ const AddPollsForm = (props: any) => {
             </div>
           </div>
         ))}
-        {/* <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          className={styles.topDownMargin}
-          onClick={handleSubmit}
-        >Send</Button> */}
       </form>
     </div>
   );
