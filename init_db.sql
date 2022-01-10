@@ -58,4 +58,11 @@ CREATE OR REPLACE VIEW questions_and_answers
     ua.user_id
    FROM polls p
      LEFT JOIN polls_options po ON p.id = po.poll_id
-     JOIN users_answers ua ON ua.poll_id = p.id AND ua.option_id = po.id;
+     LEFT JOIN users_answers ua ON ua.poll_id = p.id AND ua.option_id = po.id;
+
+CREATE OR REPLACE VIEW polls_popularity
+ AS
+select id, COALESCE(t.answers,0) as answers from polls
+Left Join (select poll_id, count(distinct user_id) as answers from users_answers group by poll_id)t
+ON t.poll_id = polls.id
+order by id desc

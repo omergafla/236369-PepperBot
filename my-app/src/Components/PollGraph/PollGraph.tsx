@@ -22,6 +22,7 @@ export interface PollGraph{
 const PollGraph = (props: any) => {
   const [poll, setPoll] = useState<PollGraph>({id: 0, question: "", options: []});
   const [pickedAnswer, setPickedAnswer] = useState<string>("");
+  const [empty, setEmpty] = useState<boolean>(true);
   const { id } = props;
   useEffect(() => {
     const params = {
@@ -29,7 +30,13 @@ const PollGraph = (props: any) => {
     }
     fetch(`http://localhost:5000/poll/${id}`, params)
       .then((res) => res.json())
-      .then((data) => setPoll(data));
+      .then((data) => {
+        let counts = 0;
+        for(const answer of data["options"]){
+          counts += answer["counts"]
+        }
+        setEmpty(counts == 0)
+        setPoll(data)});
   }, [id]);
   
   function demoOnClick(e: any) {
@@ -41,10 +48,13 @@ const PollGraph = (props: any) => {
   return (
   <div className={styles.Poll}>
     <div className={styles.question}>
-      <h1>{poll["question"]}</h1>
-      <h4>Create a Sub-Poll of the answer: 
-        {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - "+poll["question"]+" - ("+pickedAnswer+")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"}/>)}
+      <h1 style={{textAlign: 'center'}}>{poll["question"]}</h1>
+      {empty ? (<div style={{textAlign: 'center'}}>No answers yet</div>) : (
+        <h4>Create a Sub-Poll of the answer: 
+          {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - "+poll["question"]+" - ("+pickedAnswer+")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"}/>)}
         </h4>
+      )}
+      
     </div>
     <BarChart
           width={700}

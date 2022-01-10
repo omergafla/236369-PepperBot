@@ -42,12 +42,13 @@ def map_result(obj):
 def reduce_poll_data(poll):
     res = {}
     answers = []
-    res["id"] = poll[0]["poll_id"]
-    res["question"] = poll[0]["question"]
-    for data in poll:
-        memo = {"answer": data["option"], "counts": data["counts"]}
-        answers.append(memo)
-    res["options"] = answers
+    if len(poll)>0:
+        res["id"] = poll[0]["poll_id"]
+        res["question"] = poll[0]["question"]
+        for data in poll:
+            memo = {"answer": data["option"], "counts": data["counts"]}
+            answers.append(memo)
+        res["options"] = answers
     return res   
 
 def sql_call(sql_string):
@@ -149,7 +150,9 @@ def get_users():
 @app.route("/polls")
 def get_all_polls():
     try:
-        sql_string = """select id, question, created_by, created_at from polls"""
+        sql_string = """select polls.id, question, created_by, created_at, answers 
+                        from polls 
+                        left join polls_popularity t on t.id = polls.id"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
         for r in result:
@@ -439,7 +442,7 @@ def create_token():
     username = json.loads(request.data)["username"]
     password = json.loads(request.data)["password"] 
     if username is None or password is None:
-        abort(400) # missing arguments
+         return app.response_class(status=400) # missing arguments
     sql_string = f"""select username, password from admins where username='{username}'"""
     result = sql_call(sql_string)
     result_dict = map_result(result)[0]

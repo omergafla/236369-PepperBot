@@ -15,11 +15,12 @@ import { Button } from '@mui/material';
 // ];
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 150 },
-  { field: 'question', headerName: 'Question', width: 900, renderCell: (cellValues) => {
+  { field: 'id', headerName: 'ID', width: 100 },
+  { field: 'question', headerName: 'Question', width: 800, renderCell: (cellValues) => {
     const url = '/polls/'+cellValues.row["id"];
     return <a href={url}>{(cellValues.row["question"])}</a>;
   }},
+  { field: 'answers', headerName: 'Answers', width: 100 },
   { field: 'created_by', headerName: 'Created By', width: 150 },
   { field: 'created_at', headerName: 'Created At', width: 150 },
 ];
