@@ -24,7 +24,7 @@ const columns: GridColDef[] = [
   { field: 'created_at', headerName: 'Created At', width: 150 },
 ];
 
-const Polls = () => {
+const Polls = (props: any) => {
   const [rows, setRows] = useState<GridRowsProp>([])
 useEffect(() =>{
   // GET POLLS
@@ -40,7 +40,7 @@ useEffect(() =>{
 },[]);
   return (
   <div className={styles.Poll}>
-    <TopMenu/>
+    <TopMenu removeToken={props.removeToken}/>
     <div className={styles.wrap}>
       <DataGrid rows={rows} columns={columns} />
     </div>
