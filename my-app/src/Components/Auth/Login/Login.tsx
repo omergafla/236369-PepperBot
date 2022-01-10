@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 
 function Login(props: any) {
 
+  const { setToken } = props;
   const [loginForm, setloginForm] = useState({
     username: "",
     password: ""
@@ -41,15 +42,18 @@ function Login(props: any) {
       .then((response) => {
         if (response.status === 200)
           return response.json()
-        else if (response.status === 401){
+        else if (response.status === 401) {
           setOpen(true);
           setError(true);
           setMsg("Username or password is inccorect, please try again");
           return;
         }
       }).then((data) => {
-        props.setToken(data.access_token)
-
+        setToken(data.access_token);
+        setloginForm(({
+          username: "",
+          password: ""
+        }))
       }).catch((error) => {
         // Do somethong else here!
         if (error.response) {
@@ -58,10 +62,7 @@ function Login(props: any) {
           console.log(error.response.headers)
         }
       })
-    setloginForm(({
-      username: "",
-      password: ""
-    }))
+
 
     event.preventDefault()
   }

@@ -6,11 +6,11 @@ import styles from './Poll.module.css';
 import TopMenu from '../TopMenu/TopMenu';
 import PollGraph from '../PollGraph/PollGraph';
 
-const Poll = () => {
+const Poll = (props: any) => {
   const { id } = useParams();
   return (
   <div className={styles.Poll}>
-    <TopMenu/>
+    <TopMenu removeToken={props.removeToken}/>
     <PollGraph id={id} />
   </div>
 )}
