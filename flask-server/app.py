@@ -517,7 +517,7 @@ def create_token():
     correct_password = password == result_dict["password"]
     if correct_password == False:  # wrong password
         return app.response_class(status=401)
-    session["username"] = username
+    # session["username"] = username
     access_token = create_access_token(identity=username)
     response = app.response_class(response=json.dumps({"access_token": access_token}),
                                   status=200,
@@ -529,7 +529,7 @@ def create_token():
 @app.route("/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
-    session.pop('username', None)
+    # session.pop('username', None)
     unset_jwt_cookies(response)
     return response
 
