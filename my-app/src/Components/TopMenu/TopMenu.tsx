@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './TopMenu.css';
 import Button from '@mui/material/Button';
 import ScrollDialog from '../ScrollDialog/ScrollDialog';
@@ -19,10 +19,16 @@ const TopMenu = (props: any) => {
       })
   }
 
-  const [username, setUsername] = useState("Admin");
 
+  const [username, setUsername] = useState("Admin");
+  
   const getUsername = () => {
-    fetch("http://localhost:5000/username")
+    fetch("http://localhost:5000/username", {
+      headers: {
+        'Authorization': 'Bearer '+props.token,
+        'Access-Control-Allow-Origin': "*"
+      }
+    })
       .then(res => { return res.json() })
       .then((data) => {
         const username = data.username;
@@ -30,6 +36,9 @@ const TopMenu = (props: any) => {
         setUsername(capitalizedUsername);
       })
   }
+  
+  useEffect( getUsername, []);
+  
 
   const buttonStyle = {
     color: "#8884d8",
@@ -37,7 +46,6 @@ const TopMenu = (props: any) => {
     marginRight: "2vh"
   };
 
-  getUsername();
   return (
     <Box sx={{ flexGrow: 1 }} className="full-width">
       <AppBar position="sticky" style={{ background: "#8884d8" }}>
