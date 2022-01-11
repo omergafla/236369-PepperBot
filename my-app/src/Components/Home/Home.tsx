@@ -27,7 +27,7 @@ const Home = (props: any) => {
   return (
     <div>
       {access === 1 && <div>
-        <TopMenu removeToken={removeToken} userName={userName} />
+        <TopMenu removeToken={removeToken} userName={userName} token={token} />
         <BasicGrid />
       </div>}
       {access === 2 && <text> unauhorized </text>}

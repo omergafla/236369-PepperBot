@@ -28,8 +28,7 @@ app.config["SECRET_KEY"] = randint(0,3000)
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["SESSION_TYPE"] = 'filesystem'
 # app.config.from_object(__name__)
-
-cors = CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
 jwt = JWTManager(app)
 
@@ -477,9 +476,12 @@ def add_answer():
 
 
 @app.route("/username")
+@cross_origin()
+@jwt_required()
 def getUsername():
-    username = session["username"]
-    response = jsonify({"username": "admin"})
+    # username = session["username"]
+    username = get_jwt()["sub"]
+    response = jsonify({"username": username})
     return response
 
 
@@ -499,6 +501,7 @@ def refresh_expiring_jwts(response):
 
 
 @app.route('/token', methods=["POST"])
+@cross_origin()
 def create_token():
     username = json.loads(request.data)["username"]
     password = json.loads(request.data)["password"]
@@ -514,19 +517,19 @@ def create_token():
     correct_password = password == result_dict["password"]
     if correct_password == False:  # wrong password
         return app.response_class(status=401)
-    session["username"] = username
+    # session["username"] = username
     access_token = create_access_token(identity=username)
     response = app.response_class(response=json.dumps({"access_token": access_token}),
                                   status=200,
                                   mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
 @app.route("/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
-    session.pop('username', None)
+    # session.pop('username', None)
     unset_jwt_cookies(response)
     return response
 

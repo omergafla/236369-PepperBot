@@ -10,7 +10,7 @@ const Poll = (props: any) => {
   const { id } = useParams();
   return (
   <div className={styles.Poll}>
-    <TopMenu removeToken={props.removeToken}/>
+    <TopMenu removeToken={props.removeToken} token={props.token}/>
     <PollGraph id={id} />
   </div>
 )}

@@ -41,7 +41,7 @@ useEffect(() =>{
 },[]);
   return (
   <div className={styles.Poll}>
-    <TopMenu removeToken={props.removeToken}/>
+    <TopMenu removeToken={props.removeToken} token={props.token}/>
     <div className={styles.wrap}>
       <DataGrid rows={rows} columns={columns} />
     </div>
