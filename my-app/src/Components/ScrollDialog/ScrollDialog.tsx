@@ -21,6 +21,7 @@ export default function ScrollDialog(props: any) {
 
   const [inputFields, setInputFields] = useState([
     { id: Math.random(), option: '' },
+    { id: Math.random(), option: '' }
   ]);
   const [question, setQuestion] = useState("")
 

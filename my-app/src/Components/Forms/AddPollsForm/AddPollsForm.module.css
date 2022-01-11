@@ -16,3 +16,10 @@
 .downMargin{
     margin-bottom: 2vh !important;
 }
+
+.question{
+    background-color: #eee8f6 !important;
+    font-weight: 800 !important;
+    color: black !important;
+    margin-bottom: 2vh !important;
+}

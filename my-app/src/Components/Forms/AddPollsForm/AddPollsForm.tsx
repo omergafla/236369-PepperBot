@@ -43,8 +43,8 @@ const AddPollsForm = (props: any) => {
               label="Ask a question"
               variant="filled"
               value={question}
-              className={styles.downMargin}
               fullWidth
+              className={styles.question}
               onChange={handleQuestionChange}
             />
         {inputFields.map((inputField: { id: number; option: string; }) => (
@@ -58,7 +58,7 @@ const AddPollsForm = (props: any) => {
               onChange={(event: any) => handleChangeInput(inputField.id, event)}
             />
             <div>
-              <IconButton disabled={inputFields.length === 1} onClick={() => handleRemoveFields(inputField.id)}>
+              <IconButton disabled={inputFields.length < 3} onClick={() => handleRemoveFields(inputField.id)}>
                 <RemoveIcon />
               </IconButton>
               <IconButton onClick={handleAddFields}>

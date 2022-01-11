@@ -26,8 +26,8 @@ app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
 app.config["SECRET_KEY"] = "22222"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["SESSION_TYPE"] = 'filesystem'
-
-CORS(app, supports_credentials=True)
+# app.config.from_object(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
 jwt = JWTManager(app)
 app.config.from_object(__name__)
@@ -50,14 +50,14 @@ def map_result(obj):
 def reduce_poll_data(poll):
     res = {}
     answers = []
-    res["id"] = poll[0]["poll_id"]
-    res["question"] = poll[0]["question"]
-    for data in poll:
-        memo = {"answer": data["option"], "counts": data["counts"]}
-        answers.append(memo)
-    res["options"] = answers
-    return res
-
+    if len(poll)>0:
+        res["id"] = poll[0]["poll_id"]
+        res["question"] = poll[0]["question"]
+        for data in poll:
+            memo = {"answer": data["option"], "counts": data["counts"]}
+            answers.append(memo)
+        res["options"] = answers
+    return res   
 
 def sql_call(sql_string):
     conn = None
@@ -180,7 +180,9 @@ def get_users():
 @app.route("/polls")
 def get_all_polls():
     try:
-        sql_string = """select id, question, created_by, created_at from polls"""
+        sql_string = """select polls.id, question, created_by, created_at, answers 
+                        from polls 
+                        left join polls_popularity t on t.id = polls.id"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
         for r in result:
@@ -477,9 +479,11 @@ def add_answer():
 
 @app.route("/username")
 @cross_origin()
+@jwt_required()
 def getUsername():
-    username = session["username"]
-    response = jsonify({"username": "admin"})
+    # username = session["username"]
+    username = get_jwt()["sub"]
+    response = jsonify({"username": username})
     return response
 
 
@@ -499,6 +503,7 @@ def refresh_expiring_jwts(response):
 
 
 @app.route('/token', methods=["POST"])
+@cross_origin()
 def create_token():
     username = json.loads(request.data)["username"]
     password = json.loads(request.data)["password"]
@@ -515,19 +520,19 @@ def create_token():
         correct_password = verify_password(password, result_dict["password"]) 
     if correct_password == False:  # wrong password
         return app.response_class(status=401)
-    session["username"] = username
+    # session["username"] = username
     access_token = create_access_token(identity=username)
     response = app.response_class(response=json.dumps({"access_token": access_token}),
                                   status=200,
                                   mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
 @app.route("/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
-    session.pop('username', None)
+    # session.pop('username', None)
     unset_jwt_cookies(response)
     return response
 

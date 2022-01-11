@@ -5,7 +5,7 @@ import BasicGrid from '../BasicGrid/BasicGrid';
 
 
 const Home = (props: any) => {
-  // const [access, setAccess] = useState(0)
+  const [access, setAccess] = useState(0)
   const { token, removeToken, userName } = props;
 
   //All this nonsense is for accessing routes that are protected in the server~!
@@ -34,8 +34,11 @@ const Home = (props: any) => {
     //   {access === 2 && <text> unauhorized </text>}
     // </div>
     <div>
-      <TopMenu removeToken={removeToken} userName={userName} />
-      <BasicGrid />
+      {access === 1 && <div>
+        <TopMenu removeToken={removeToken} userName={userName} token={token} />
+        <BasicGrid />
+      </div>}
+      {access === 2 && <text> unauhorized </text>}
     </div>
 
 
