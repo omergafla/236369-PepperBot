@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS Admins
 (
     ID SERIAL,
     username VARCHAR(50),
-	password VARCHAR(50),
+	password VARCHAR(128),
     PRIMARY KEY (ID),
     UNIQUE (username)
 );

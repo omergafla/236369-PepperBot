@@ -19,7 +19,7 @@ const AddAdminForm = (props: any) => {
     <div className={styles.AddAdminForm}>
       <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
       <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
-      <TextField className={styles.Margin} id="repeat-password" label="Repeat Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
+      <TextField className={styles.Margin} id="repeatPassword" label="Repeat Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
     </div>
   )
 }
