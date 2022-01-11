@@ -19,19 +19,19 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
 from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
 import telegram_hanlder
-from passlib.apps import custom_app_context as pwd_context
-from random import randint
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
-app.config["SECRET_KEY"] = randint(0,3000)
+app.config["SECRET_KEY"] = "22222"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["SESSION_TYPE"] = 'filesystem'
 # app.config.from_object(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
 jwt = JWTManager(app)
-
+app.config.from_object(__name__)
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 
 def map_result(obj):
@@ -119,11 +119,11 @@ def send_poll(poll_id, question, answers, users=None):
 
 
 def hash_password(password):
-    return pwd_context.encrypt(password)
+    return generate_password_hash(password)
 
 
-def verify_password(password, password_hash):
-    return pwd_context.verify(password, password_hash)
+def verify_password(password, pwhash):
+    return check_password_hash(pwhash, password)
 
 
 @app.route("/add_user", methods=['POST'])
@@ -159,10 +159,10 @@ def delete_user():
 @app.route("/users_counts_data")
 def get_users():
     try:
-        sql_string = """select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
-         COUNT(CASE WHEN is_active = 0 THEN id END) AS inactive,
-		 COUNT(CASE WHEN is_admin = 1 THEN id END) AS admins,
-		 COUNT(id) as total
+        sql_string = """
+        select COUNT(CASE WHEN is_active = 1 THEN id END) AS active,
+        COUNT(CASE WHEN is_active = 0 THEN id END) AS inactive,
+        COUNT(id) as total
         from users"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
@@ -219,7 +219,7 @@ def get_polls():
 @app.route("/admins_counts")
 def get_admins():
     try:
-        sql_string = """select COUNT(id) as total from users where is_admin = 1"""
+        sql_string = """select COUNT(*) as total from admins"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
         response = app.response_class(response=json.dumps(result[0]),
@@ -395,14 +395,16 @@ def add_poll():
 def add_admin():
     try:
         response = app.response_class(status=200)
-        data = request.data
-        username, password = json.loads(data)
+        data = json.loads(request.data)
         sql_string = "INSERT INTO Admins (username, password) VALUES ('{username}', '{password}')".format(
-            username=username, password=hash_password(password))
+            username=data["username"], password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
-        response = app.response_class(status=500)
-        print(str(e))
+        #return error here
+        response = app.response_class(response=json.dumps(e),
+                                      status=500,
+                                      mimetype='application/json')
+        # print(str(e))
     finally:
         return response
 
@@ -512,9 +514,10 @@ def create_token():
     if len(result.rows) != 1:  # admin doesnt exist
         return app.response_class(status=401)
     result_dict = map_result(result)[0]
-    # correct_password = verify_password(password,result_dict["password"])
-    # change this once the passwords are hashed
-    correct_password = password == result_dict["password"]
+    if (username == "admin"):
+         correct_password = password == result_dict["password"]
+    else:
+        correct_password = verify_password(password, result_dict["password"]) 
     if correct_password == False:  # wrong password
         return app.response_class(status=401)
     # session["username"] = username
@@ -535,7 +538,7 @@ def logout():
 
 
 @app.route("/")
-@jwt_required()
+# @jwt_required()
 @cross_origin()
 def somefunc():
     response = app.response_class(status=200)
