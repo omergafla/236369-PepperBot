@@ -46,6 +46,7 @@ const AddPollsForm = (props: any) => {
               fullWidth
               className={styles.question}
               onChange={handleQuestionChange}
+              color="secondary"
             />
         {inputFields.map((inputField: { id: number; option: string; }) => (
           <div key={inputField.id}>
@@ -55,6 +56,7 @@ const AddPollsForm = (props: any) => {
               variant="filled"
               value={inputField.option}
               fullWidth
+              color="primary"
               onChange={(event: any) => handleChangeInput(inputField.id, event)}
             />
             <div>

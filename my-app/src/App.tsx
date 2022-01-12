@@ -10,10 +10,11 @@ import useToken from './Components/Auth/useToken'
 import Poll from './Components/Poll/Poll';
 import Polls from './Components/Polls/Polls';
 import Admins from './Components/Admins/Admins';
+import NotFound from './Components/NotFound/NotFound';
 
 function App() {
   const { token, removeToken, setToken } = useToken();
-
+  
   return (
     <Router>
       <div className="App">
@@ -26,8 +27,10 @@ function App() {
                 <Route path="/polls/:id" element={<Poll token={token} removeToken={removeToken}/>} />
                 <Route path="/polls" element={<Polls token={token} removeToken={removeToken}/>} />
                 <Route path="/admins" element={<Admins token={token} removeToken={removeToken}/>} />
+                <Route path="*" element={<NotFound/>} />
               </Routes>
             </>
+
           )}
       </div>
     </Router>

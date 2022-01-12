@@ -5,25 +5,25 @@ import BasicGrid from '../BasicGrid/BasicGrid';
 
 
 const Home = (props: any) => {
-  const [access, setAccess] = useState(0)
+  // const [access, setAccess] = useState(0)
   const { token, removeToken, userName } = props;
 
   //All this nonsense is for accessing routes that are protected in the server~!
-  const header = 'Bearer ' + token;
-  useEffect(() => {
-    fetch("http://localhost:5000/", {
-      headers: {
-        'Authorization': header,
-        'Access-Control-Allow-Origin': "*"
-      },
-    }).then((response) => {
-      if (response.ok)
-        setAccess(1);
-      else {
-        setAccess(2);
-      }
-    })
-  }, [token])
+  // const header = 'Bearer ' + token;
+  // useEffect(() => {
+  //   fetch("http://localhost:5000/", {
+  //     headers: {
+  //       'Authorization': header,
+  //       'Access-Control-Allow-Origin': "*"
+  //     },
+  //   }).then((response) => {
+  //     if (response.ok)
+  //       setAccess(1);
+  //     else {
+  //       setAccess(2);
+  //     }
+  //   })
+  // }, [token])
 
   return (
     // <div>
@@ -34,11 +34,11 @@ const Home = (props: any) => {
     //   {access === 2 && <text> unauhorized </text>}
     // </div>
     <div>
-      {access === 1 && <div>
+      {/* {access === 1 && <div> */}
         <TopMenu removeToken={removeToken} userName={userName} token={token} />
         <BasicGrid />
-      </div>}
-      {access === 2 && <text> unauhorized </text>}
+      {/* </div>} */}
+      {/* // {access === 2 && <text> unauhorized </text>} */}
     </div>
 
 

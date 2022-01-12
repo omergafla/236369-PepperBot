@@ -83,13 +83,13 @@ function Login(props: any) {
   return (
     <div className={styles.Login}>
       <span data-tooltip="Hey! I'm Pepper, Enter credentials please, woof!" data-flow="right">
-      <img className="pepper" src={require('./pepper.jpeg')} height="80px"></img></span>
+        <img className="pepper" src={require('./pepper.jpeg')} height="80px"></img></span>
       <Box className={styles.box}>
         <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
         <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
         <Button onClick={logMeIn} variant="contained">Login</Button>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={"error"} sx={{ width: '100%' }}>
+          <Alert variant="filled" onClose={handleClose} severity={"error"} sx={{ width: '100%' }}>
             {msg}
           </Alert>
         </Snackbar>

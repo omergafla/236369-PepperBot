@@ -17,9 +17,9 @@ const AddAdminForm = (props: any) => {
 
   return (
     <div className={styles.AddAdminForm}>
-      <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
-      <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
-      <TextField className={styles.Margin} id="repeatPassword" label="Repeat Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
+      <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" onChange={handleChange} />
+      <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" onChange={handleChange} />
+      <TextField className={styles.Margin} id="repeatPassword" label="Repeat Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} helperText={error ? "Passwords do not match.": ""} />
     </div>
   )
 }

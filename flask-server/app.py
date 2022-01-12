@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
 app.config["SECRET_KEY"] = "22222"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-app.config["SESSION_TYPE"] = 'filesystem'
+app.config["SESSION_TYPE"] = 'null'
 # app.config.from_object(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
@@ -50,14 +50,15 @@ def map_result(obj):
 def reduce_poll_data(poll):
     res = {}
     answers = []
-    if len(poll)>0:
+    if len(poll) > 0:
         res["id"] = poll[0]["poll_id"]
         res["question"] = poll[0]["question"]
         for data in poll:
             memo = {"answer": data["option"], "counts": data["counts"]}
             answers.append(memo)
         res["options"] = answers
-    return res   
+    return res
+
 
 def sql_call(sql_string):
     conn = None
@@ -140,7 +141,6 @@ def insert_user():
         response = set_active_value(effective_id, 1)
     except Exception as e:
         response = app.response_class(status=500)
-        print(str(e))
     finally:
         return response
 
@@ -171,11 +171,9 @@ def get_users():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
-
 
 @app.route("/admins")
 def get_admins():
@@ -215,7 +213,6 @@ def get_all_polls():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
@@ -232,7 +229,6 @@ def get_polls():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
@@ -249,7 +245,6 @@ def get_all_admins():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
@@ -266,7 +261,6 @@ def today_polls():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
@@ -283,7 +277,6 @@ def active_users_today():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         response = app.response_class(status=500)
     finally:
         return response
@@ -300,7 +293,6 @@ def get_newest_poll():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         return app.response_class(status=500)
     finally:
         return response
@@ -319,7 +311,6 @@ def get_popular_poll():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         return app.response_class(status=500)
     finally:
         return response
@@ -350,7 +341,6 @@ def daily_users():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         return app.response_class(status=500)
     finally:
         return response
@@ -381,7 +371,6 @@ def daily_polls():
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
-        print(str(e))
         return app.response_class(status=500)
     finally:
         return response
@@ -409,9 +398,9 @@ def add_poll():
             send_poll(_id, poll["question"], flatten_answers)
     except Exception as e:
         response = app.response_class(status=500)
-        print(str(e))
     finally:
         return response
+
 
 @app.route("/add_admin", methods=['POST'])
 def add_admin():
@@ -422,11 +411,10 @@ def add_admin():
             username=data["username"], password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
-        #return error here
-        response = app.response_class(response=json.dumps(e),
-                                      status=500,
-                                      mimetype='application/json')
-        # print(str(e))
+        if e.message == 'UNIQUE_VIOLATION':
+            response = app.response_class(status=409)
+        else:
+            response = app.response_class(status=500)
     finally:
         return response
 
@@ -455,7 +443,6 @@ def add_sub_poll():
             send_poll(_id, poll["question"], flatten_answers, users)
     except Exception as e:
         response = app.response_class(status=500)
-        print(str(e))
     finally:
         return response
 
@@ -478,7 +465,6 @@ def get_poll(poll_id):
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
         response = app.response_class(status=500)
-        print(str(e))
     finally:
         return response
 
@@ -494,7 +480,6 @@ def add_answer():
         response = app.response_class(status=200)
     except Exception as e:
         response = app.response_class(status=500)
-        print(str(e))
     finally:
         return response
 
@@ -503,7 +488,6 @@ def add_answer():
 @cross_origin()
 @jwt_required()
 def getUsername():
-    # username = session["username"]
     username = get_jwt()["sub"]
     response = jsonify({"username": username})
     return response
@@ -527,34 +511,35 @@ def refresh_expiring_jwts(response):
 @app.route('/token', methods=["POST"])
 @cross_origin()
 def create_token():
-    username = json.loads(request.data)["username"]
-    password = json.loads(request.data)["password"]
-    if username is None or password is None:
-        return app.response_class(status=400)
-    sql_string = f"""select username, password from admins where username='{username}'"""
-    result = sql_call(sql_string)
-    if len(result.rows) != 1:  # admin doesnt exist
-        return app.response_class(status=401)
-    result_dict = map_result(result)[0]
-    if (username == "admin"):
-         correct_password = password == result_dict["password"]
-    else:
-        correct_password = verify_password(password, result_dict["password"]) 
-    if correct_password == False:  # wrong password
-        return app.response_class(status=401)
-    # session["username"] = username
-    access_token = create_access_token(identity=username)
-    response = app.response_class(response=json.dumps({"access_token": access_token}),
-                                  status=200,
-                                  mimetype='application/json')
-    # response.headers.add('Access-Control-Allow-Origin', '*')
+    try:
+        username = json.loads(request.data)["username"]
+        password = json.loads(request.data)["password"]
+        if username is None or password is None:
+            return app.response_class(status=400)
+        sql_string = f"""select username, password from admins where username='{username}'"""
+        result = sql_call(sql_string)
+        if len(result.rows) != 1:  # admin doesnt exist
+            return app.response_class(status=401)
+        result_dict = map_result(result)[0]
+        if (username == "admin"):
+            correct_password = password == result_dict["password"]
+        else:
+            correct_password = verify_password(
+                password, result_dict["password"])
+        if correct_password == False:  # wrong password
+            return app.response_class(status=401)
+        access_token = create_access_token(identity=username)
+        response = app.response_class(response=json.dumps({"access_token": access_token}),
+                                      status=200,
+                                      mimetype='application/json')
+    except Exception as e:
+        return app.response_class(status=500)
     return response
 
 
 @app.route("/logout", methods=["POST"])
 def logout():
     response = jsonify({"msg": "logout successful"})
-    # session.pop('username', None)
     unset_jwt_cookies(response)
     return response
 

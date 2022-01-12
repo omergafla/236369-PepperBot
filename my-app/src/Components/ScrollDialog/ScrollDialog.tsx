@@ -19,6 +19,7 @@ export default function ScrollDialog(props: any) {
   const [msg, setMsg] = useState("");
   const [error, setError] = useState(false);
 
+
   const [inputFields, setInputFields] = useState([
     { id: Math.random(), option: '' },
     { id: Math.random(), option: '' }
@@ -31,6 +32,17 @@ export default function ScrollDialog(props: any) {
     repeatPassword: "",
   })
 
+  function validateForm(action: string) {
+    const res = action === "admin" ?
+      signUpForm.username.length > 0 && signUpForm.password.length > 0 :
+      question.length > 0 && inputFields[0].option.length > 0 && inputFields[1].option.length > 0;
+    if (!res) {
+      setSeverity("error");
+      setMsg("Fields cannot be empty! Please fill all fields to proceed");
+      setOpenSnackBar(true);
+    }
+    return res;
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -43,50 +55,93 @@ export default function ScrollDialog(props: any) {
   const handleCloseSnackBar = () => {
     setOpenSnackBar(false);
   };
-  
+
 
   const handleSubmit = () => {
+    if (!validateForm(actionType)) {
+      return;
+    }
     if (actionType === "admin") {
-      if (signUpForm.password !== signUpForm.repeatPassword){
+      if (signUpForm.password !== signUpForm.repeatPassword) {
         setError(true);
-        setSeverity("error");
-        setOpen(false);
         return;
       }
-      const result = {'username': signUpForm.username, 'password': signUpForm.password} 
+      const result = { 'username': signUpForm.username, 'password': signUpForm.password }
       const params = {
         method: 'POST',
         body: JSON.stringify(result)
       }
       fetch("http://localhost:5000/add_admin", params)
-      .then((response)=>
-      {
-        if(response.ok){
-          setSeverity("success");
-        }
-      })
+        .then((response) => {
+          let msg;
+          switch (response.status) {
+            case 200:
+              setSeverity("success");
+              msg = signUpForm.username + " was added as an admin succefully!"
+              setMsg(msg);
+              break;
+            case 409:
+              setSeverity("error");
+              msg = "Uh oh! An admin by the name " + signUpForm.username + " already exists, please try a different name."
+              setMsg(msg);
+              break;
+            default:
+              setSeverity("error");
+              setMsg("No need to panic, but something has gone wrong.")
+          }
+          setOpenSnackBar(true);
+          setOpen(false);
+        })
     }
     if (actionType === "poll") {
-      if(poll_id && answer){
-      const result = {'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer':answer} 
-      const params = {
-        method: 'POST',
-        body: JSON.stringify(result)
+      if (poll_id && answer) {
+        const result = { 'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer': answer }
+        const params = {
+          method: 'POST',
+          body: JSON.stringify(result)
+        }
+        fetch("http://localhost:5000/add_sub_poll", params)
+          .then((response) => {
+            switch (response.status) {
+              case 200:
+                setSeverity("success");
+                setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
+                break;
+              default:
+                setSeverity("error");
+                setMsg("Whoops! Something has gone wrong.")
+            }
+          }).then(() => {
+            setOpenSnackBar(true);
+            setOpen(false);
+          })
       }
-      fetch("http://localhost:5000/add_sub_poll", params)
-      }
-      else{
-        const result = {'question': question, 'answers': inputFields} 
+
+      else {
+        const result = { 'question': question, 'answers': inputFields }
         const params = {
           method: 'POST',
           body: JSON.stringify(result)
         }
         fetch("http://localhost:5000/add_poll", params)
+          .then((response) => {
+            switch (response.status) {
+              case 200:
+                setSeverity("success");
+                setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
+                break;
+              default:
+                setSeverity("error");
+                setMsg("Whoops! Something has gone wrong.")
+            }
+          }).then(() => {
+            setOpenSnackBar(true);
+            setOpen(false);
+          })
       }
     }
-    setOpen(false);
   };
-
+  // #leapes
 
   const descriptionElementRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
@@ -99,22 +154,16 @@ export default function ScrollDialog(props: any) {
   }, [open]);
 
   const buttonStyle = {
-    // color: "#8884d8",
-    // backgroundColor: "white",
-    // marginRight: "2vh"
     marginRight: "1.5vh",
     background: "transparent",
     color: "white",
     boxShadow: "none"
   };
   const subPollButtonStyle = {
-    // color: "#8884d8",
-    // backgroundColor: "white",
-    // marginRight: "2vh"
     marginRight: "1.5vh",
     background: "white",
     color: "#8884d8",
-    
+
   };
 
   return (
@@ -140,8 +189,8 @@ export default function ScrollDialog(props: any) {
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-            {actionType === "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields} poll_id={poll_id} answer={answer}/>) 
-            : (<AddAdminForm setSignUpForm={setSignUpForm} error={error} setError={setError}/>)
+            {actionType === "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields} poll_id={poll_id} answer={answer} />)
+              : (<AddAdminForm setSignUpForm={setSignUpForm} error={error} setError={setError} />)
             }
           </DialogContentText>
         </DialogContent>
@@ -151,7 +200,7 @@ export default function ScrollDialog(props: any) {
         </DialogActions>
       </Dialog>
       <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleCloseSnackBar}>
-        <Alert onClose={handleCloseSnackBar} severity={severity} sx={{ width: '100%' }}>
+        <Alert variant="filled" onClose={handleCloseSnackBar} severity={severity} sx={{ width: '100%' }}>
           {msg}
         </Alert>
       </Snackbar>
