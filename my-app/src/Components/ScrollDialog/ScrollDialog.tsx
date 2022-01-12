@@ -99,14 +99,31 @@ export default function ScrollDialog(props: any) {
   }, [open]);
 
   const buttonStyle = {
+    // color: "#8884d8",
+    // backgroundColor: "white",
+    // marginRight: "2vh"
+    marginRight: "1.5vh",
+    background: "transparent",
+    color: "white",
+    boxShadow: "none"
+  };
+  const subPollButtonStyle = {
+    // color: "#8884d8",
+    // backgroundColor: "white",
+    // marginRight: "2vh"
+    marginRight: "1.5vh",
+    background: "white",
     color: "#8884d8",
-    backgroundColor: "#FFF",
-    marginRight: "2vh"
+    
   };
 
   return (
     <div>
-      <Button variant="contained" style={buttonStyle} onClick={handleOpen}>{buttonText}</Button>
+      {poll_id ? (
+        <Button style={subPollButtonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
+      ) : (
+        <Button style={buttonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
+      )}
       <Dialog
         fullWidth={true}
         maxWidth={'md'}

@@ -3,3 +3,14 @@
   background-color: "#AAAA" !important;
   margin-right: "2vh" !important;
 }
+
+.hoverbold{
+  transition: 1s all ease-in-out !important;
+  margin-right: "1.5vh" !important;
+  background: "transparent" !important;
+  color: "white" !important;
+  box-shadow: "none" !important;
+}
+.hoverbold:hover{
+  font-weight: 800;
+}

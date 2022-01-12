@@ -9,6 +9,7 @@ import Login from './Components/Auth/Login/Login'
 import useToken from './Components/Auth/useToken'
 import Poll from './Components/Poll/Poll';
 import Polls from './Components/Polls/Polls';
+import Admins from './Components/Admins/Admins';
 
 function App() {
   const { token, removeToken, setToken } = useToken();
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/" element={<Home token={token} removeToken={removeToken} />}></Route>
                 <Route path="/polls/:id" element={<Poll token={token} removeToken={removeToken}/>} />
                 <Route path="/polls" element={<Polls token={token} removeToken={removeToken}/>} />
+                <Route path="/admins" element={<Admins token={token} removeToken={removeToken}/>} />
               </Routes>
             </>
           )}

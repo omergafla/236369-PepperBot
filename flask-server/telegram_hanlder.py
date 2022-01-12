@@ -77,7 +77,7 @@ def handle_callback_query(update, context):
     poll_id = json.loads(update.callback_query.data)["poll_id"]
     answer = json.loads(update.callback_query.data)["answer"]
     context.bot.send_message(chat_id=update.effective_chat.id, 
-                             text='Your Answer: <b> '+update.callback_query.data+'</b>', parse_mode=telegram.ParseMode.HTML)
+                             text='Your Answer is <b>'+json.loads(update.callback_query.data)["answer"]+'</b>', parse_mode=telegram.ParseMode.HTML)
     update.callback_query.edit_message_reply_markup(None)
     r = requests.post(url = 'http://localhost:5000/add_answer', data = {'chat_id': chat_id, 'poll_id': poll_id, 'answer': answer})
 

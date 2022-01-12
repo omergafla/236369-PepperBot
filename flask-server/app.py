@@ -177,6 +177,28 @@ def get_users():
         return response
 
 
+@app.route("/admins")
+def get_admins():
+    try:
+        sql_string = """SELECT a.id, a.username, COALESCE(t.polls,0) as polls
+                        FROM admins a
+                        LEFT JOIN (select COALESCE(count(id),0) as polls , created_by
+                        from polls
+                        group by created_by)t
+                        ON a.id = t.created_by"""
+        db_result = sql_call(sql_string)
+        result = map_result(db_result)
+        response = app.response_class(response=json.dumps(result),
+                                      status=200,
+                                      mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        print(str(e))
+        response = app.response_class(status=500)
+    finally:
+        return response
+
+
 @app.route("/polls")
 def get_all_polls():
     try:
@@ -217,7 +239,7 @@ def get_polls():
 
 
 @app.route("/admins_counts")
-def get_admins():
+def get_all_admins():
     try:
         sql_string = """select COUNT(*) as total from admins"""
         db_result = sql_call(sql_string)

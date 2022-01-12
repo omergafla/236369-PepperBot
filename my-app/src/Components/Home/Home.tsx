@@ -9,21 +9,21 @@ const Home = (props: any) => {
   const { token, removeToken, userName } = props;
 
   //All this nonsense is for accessing routes that are protected in the server~!
-  // const header = 'Bearer ' + token;
-  // useEffect(() => {
-  //   fetch("http://localhost:5000/", {
-  //     headers: {
-  //       'Authorization': header,
-  //       'Access-Control-Allow-Origin': "*"
-  //     },
-  //   }).then((response) => {
-  //     if (response.ok)
-  //       setAccess(1);
-  //     else {
-  //       setAccess(2);
-  //     }
-  //   })
-  // }, [token])
+  const header = 'Bearer ' + token;
+  useEffect(() => {
+    fetch("http://localhost:5000/", {
+      headers: {
+        'Authorization': header,
+        'Access-Control-Allow-Origin': "*"
+      },
+    }).then((response) => {
+      if (response.ok)
+        setAccess(1);
+      else {
+        setAccess(2);
+      }
+    })
+  }, [token])
 
   return (
     // <div>
