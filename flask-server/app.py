@@ -394,8 +394,9 @@ def add_poll():
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
-        sql_string = "INSERT INTO polls (question, created_at) VALUES ('{question}', '{time_now}') RETURNING id".format(
-            question=poll["question"], time_now=time_now)
+        
+        sql_string = "INSERT INTO polls (question, created_at, created_by) VALUES ('{question}', '{time_now}', '{username}') RETURNING id".format(
+            question=poll["question"], time_now=time_now, username=poll["username"].lower())
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
@@ -419,7 +420,7 @@ def add_admin():
         response = app.response_class(status=200)
         data = json.loads(request.data)
         sql_string = "INSERT INTO Admins (username, password) VALUES ('{username}', '{password}')".format(
-            username=data["username"], password=hash_password(data["password"]))
+            username=data["username"].lower(), password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
         #return error here

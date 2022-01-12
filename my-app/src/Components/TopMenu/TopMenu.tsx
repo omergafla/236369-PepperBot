@@ -61,7 +61,7 @@ const TopMenu = (props: any) => {
           <div className="top-menu-buttons">
             <a href="/admins"><Button className={"hoverbold"} style={buttonStyle} variant="contained">Admins</Button></a>
             <a href="/polls"><Button className={"hoverbold"} style={buttonStyle} variant="contained">Polls</Button></a>
-            <ScrollDialog title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} />
+            <ScrollDialog username={username} title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} />
             <ScrollDialog title={"Add New Admin To The System"} buttonText={"Add Admin"} actionType={"admin"} />
             <Button style={buttonStyle} variant="contained" onClick={handleLogout}>Logout</Button>
           </div>
