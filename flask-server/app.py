@@ -185,7 +185,7 @@ def get_admins():
                         LEFT JOIN (select COALESCE(count(id),0) as polls , created_by
                         from polls
                         group by created_by)t
-                        ON a.id = t.created_by"""
+                        ON a.username = t.created_by"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
         response = app.response_class(response=json.dumps(result),

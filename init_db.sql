@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS Polls
     ID SERIAL,
     question VARCHAR(50) NOT NULL,
     permission integer,
-    created_by integer,
+    created_by VARCHAR(50),
     created_at date,
     PRIMARY KEY (ID),
-    FOREIGN KEY (created_by) REFERENCES Users(ID)
+    FOREIGN KEY (created_by) REFERENCES Admins(username)
 );
 
 CREATE TABLE IF NOT EXISTS Polls_Options
