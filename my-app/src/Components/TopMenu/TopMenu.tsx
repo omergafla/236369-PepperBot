@@ -31,6 +31,9 @@ const TopMenu = (props: any) => {
     })
       .then(res => { return res.json() })
       .then((data) => {
+        if(data && data["msg"] && data["msg"]=='Token Has Expired'){
+          window.location.href = "http://localhost:3000/login";
+        }
         const username = data.username;
         const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1);
         setUsername(capitalizedUsername);
@@ -61,7 +64,7 @@ const TopMenu = (props: any) => {
           <div className="top-menu-buttons">
             <a href="/admins"><Button className={"hoverbold"} style={buttonStyle} variant="contained">Admins</Button></a>
             <a href="/polls"><Button className={"hoverbold"} style={buttonStyle} variant="contained">Polls</Button></a>
-            <ScrollDialog title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} />
+            <ScrollDialog username={username} title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} />
             <ScrollDialog title={"Add New Admin To The System"} buttonText={"Add Admin"} actionType={"admin"} />
             <Button style={buttonStyle} variant="contained" onClick={handleLogout}>Logout</Button>
           </div>

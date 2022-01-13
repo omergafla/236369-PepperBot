@@ -11,7 +11,7 @@ const Poll = (props: any) => {
   return (
   <div className={styles.Poll}>
     <TopMenu removeToken={props.removeToken} token={props.token}/>
-    <PollGraph id={id} />
+    <PollGraph id={id} token={props.token}/>
   </div>
 )}
 

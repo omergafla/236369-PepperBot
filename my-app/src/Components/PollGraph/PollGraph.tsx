@@ -51,7 +51,7 @@ const PollGraph = (props: any) => {
       <h1 style={{textAlign: 'center'}}>{poll["question"]}</h1>
       {empty ? (<div style={{textAlign: 'center'}}>No answers yet</div>) : (
         <h4>Create a Sub-Poll of the answer: 
-          {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - "+poll["question"]+" - ("+pickedAnswer+")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"}/>)}
+          {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - "+poll["question"]+" - ("+pickedAnswer+")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"} token={props.token}/>)}
         </h4>
       )}
       

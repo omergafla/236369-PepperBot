@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS Polls
     permission integer,
     created_by VARCHAR(50),
     created_at date,
+    parent integer,
     PRIMARY KEY (ID),
     FOREIGN KEY (created_by) REFERENCES Admins(username)
 );

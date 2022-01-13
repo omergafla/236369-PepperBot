@@ -202,7 +202,7 @@ def get_admins():
 @app.route("/polls")
 def get_all_polls():
     try:
-        sql_string = """select polls.id, question, created_by, created_at, answers 
+        sql_string = """select polls.id, question, created_by, created_at, answers , parent
                         from polls 
                         left join polls_popularity t on t.id = polls.id"""
         db_result = sql_call(sql_string)
@@ -394,8 +394,9 @@ def add_poll():
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
-        sql_string = "INSERT INTO polls (question, created_at) VALUES ('{question}', '{time_now}') RETURNING id".format(
-            question=poll["question"], time_now=time_now)
+        
+        sql_string = "INSERT INTO polls (question, created_at, created_by) VALUES ('{question}', '{time_now}', '{username}') RETURNING id".format(
+            question=poll["question"], time_now=time_now, username=poll["username"].lower())
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
@@ -419,7 +420,7 @@ def add_admin():
         response = app.response_class(status=200)
         data = json.loads(request.data)
         sql_string = "INSERT INTO Admins (username, password) VALUES ('{username}', '{password}')".format(
-            username=data["username"], password=hash_password(data["password"]))
+            username=data["username"].lower(), password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
         #return error here
@@ -432,15 +433,17 @@ def add_admin():
 
 
 @app.route("/add_sub_poll", methods=['POST'])
+@jwt_required()
 def add_sub_poll():
     try:
         response = app.response_class(status=200)
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
+        username = get_jwt()["sub"]
         permission = get_option_id(poll["poll_id"], poll["answer"])
-        sql_string = "INSERT INTO polls (question, permission, created_at) VALUES ('{question}', {permission}, '{time_now}') RETURNING id".format(
-            question=poll["question"], permission=permission, time_now=time_now)
+        sql_string = "INSERT INTO polls (question, permission, created_at, parent, created_by) VALUES ('{question}', {permission}, '{time_now}', {parent}, '{username}') RETURNING id".format(
+            question=poll["question"], permission=permission, time_now=time_now, parent=poll["poll_id"], username=username)
         result = sql_call(sql_string)
         flatten_answers = []
         if result:

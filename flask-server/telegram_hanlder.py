@@ -72,7 +72,7 @@ def build_menu(buttons,n_cols,header_buttons=None,footer_buttons=None):
   return menu
 
 def handle_callback_query(update, context):
-    print(json.loads(update.callback_query.data))
+    # print(json.loads(update.callback_query.data))
     chat_id = update.callback_query.message.chat_id
     poll_id = json.loads(update.callback_query.data)["poll_id"]
     answer = json.loads(update.callback_query.data)["answer"]
