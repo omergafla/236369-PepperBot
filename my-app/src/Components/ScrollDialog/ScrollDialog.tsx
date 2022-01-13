@@ -12,7 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 
 export default function ScrollDialog(props: any) {
-  const { title, buttonText, actionType, poll_id, answer, username } = props;
+  const { title, buttonText, actionType, poll_id, answer, username, token } = props;
   const [open, setOpen] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
   const [severity, setSeverity] = useState("success" as AlertColor);
@@ -68,9 +68,14 @@ export default function ScrollDialog(props: any) {
     }
     if (actionType === "poll") {
       if(poll_id && answer){
+      const header = 'Bearer ' + token;
       const result = {'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer':answer} 
       const params = {
         method: 'POST',
+        headers: {
+          'Authorization': header,
+          'Access-Control-Allow-Origin': "*"
+        },
         body: JSON.stringify(result)
       }
       fetch("http://localhost:5000/add_sub_poll", params)

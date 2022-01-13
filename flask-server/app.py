@@ -202,7 +202,7 @@ def get_admins():
 @app.route("/polls")
 def get_all_polls():
     try:
-        sql_string = """select polls.id, question, created_by, created_at, answers 
+        sql_string = """select polls.id, question, created_by, created_at, answers , parent
                         from polls 
                         left join polls_popularity t on t.id = polls.id"""
         db_result = sql_call(sql_string)
@@ -433,15 +433,17 @@ def add_admin():
 
 
 @app.route("/add_sub_poll", methods=['POST'])
+@jwt_required()
 def add_sub_poll():
     try:
         response = app.response_class(status=200)
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
+        username = get_jwt()["sub"]
         permission = get_option_id(poll["poll_id"], poll["answer"])
-        sql_string = "INSERT INTO polls (question, permission, created_at) VALUES ('{question}', {permission}, '{time_now}') RETURNING id".format(
-            question=poll["question"], permission=permission, time_now=time_now)
+        sql_string = "INSERT INTO polls (question, permission, created_at, parent, created_by) VALUES ('{question}', {permission}, '{time_now}', {parent}, '{username}') RETURNING id".format(
+            question=poll["question"], permission=permission, time_now=time_now, parent=poll["poll_id"], username=username)
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
