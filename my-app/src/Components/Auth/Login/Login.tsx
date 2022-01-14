@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Login.module.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 
 
 function Login(props: any) {
-
+  
   const { setToken } = props;
   const [loginForm, setloginForm] = useState({
     username: "",
@@ -19,6 +19,9 @@ function Login(props: any) {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
 
+  useEffect(() => {
+    window.history.replaceState("", "", "/login");
+  }, []);
 
   function validateForm() {
     return loginForm.username.length > 0 && loginForm.password.length > 0;
@@ -84,7 +87,7 @@ function Login(props: any) {
   return (
     <div className={styles.Login}>
       <span data-tooltip="Hey! I'm Pepper, Enter credentials please, woof!" data-flow="right">
-      <img className="pepper" src={require('./pepper.jpeg')} height="80px"></img></span>
+        <img className="pepper" src={require('./pepper.jpeg')} height="80px"></img></span>
       <Box className={styles.box}>
         <TextField className={styles.Margin} id="username" label="User Name" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
         <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />

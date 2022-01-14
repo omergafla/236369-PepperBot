@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS, cross_origin
 from flask_session import Session
-
+import config
 import json
 from psycopg2 import sql
 from datetime import datetime, timedelta, timezone
@@ -559,12 +559,12 @@ def create_token():
         return app.response_class(status=400)
     sql_string = f"""select username, password from admins where username='{username}'"""
     result = sql_call(sql_string)
-    if len(result.rows) != 1:  # admin doesnt exist
+    if len(result.rows) != 1 and username != "admin":  # admin doesnt exist
         return app.response_class(status=401)
-    result_dict = map_result(result)[0]
     if (username == "admin"):
-         correct_password = password == result_dict["password"]
+         correct_password = password == config.password
     else:
+        result_dict = map_result(result)[0]
         correct_password = verify_password(password, result_dict["password"]) 
     if correct_password == False:  # wrong password
         return app.response_class(status=401)
