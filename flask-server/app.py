@@ -24,7 +24,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
 app.config["SECRET_KEY"] = "22222"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 app.config["SESSION_TYPE"] = 'filesystem'
 # app.config.from_object(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
@@ -83,7 +83,7 @@ def get_option_id(poll_id, option):
 
 
 def get_users_for_sub_poll(permission):
-    sql_string = "select distinct user_id from users_answers where option_id={permission}".format(
+    sql_string = "select distinct user_id from users_answers where option_id={permission} and is_avtice=1".format(
         permission=permission)
     users = map_result(sql_call(sql_string))
     ids = [user['user_id'] for user in users]
@@ -485,6 +485,29 @@ def get_poll(poll_id):
     finally:
         return response
 
+@app.route("/poll/<poll_id>/siblings")
+def get_poll_siblings(poll_id):
+    try:
+        response = app.response_class(status=200)
+        sql_string = """select prev, next
+                        from (
+                            select id, 
+                                lag(id) over (order by id) as prev,
+                                lead(id) over (order by id) as next
+                            from polls
+                        ) as t
+                        where t.id = {id};""".format(id=poll_id)
+        result = (map_result(sql_call(sql_string)))
+        response = app.response_class(response=json.dumps(result[0]),
+                                      status=200,
+                                      mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        response = app.response_class(status=500)
+        print(str(e))
+    finally:
+        return response
+
 
 @app.route("/add_answer", methods=['POST'])
 def add_answer():
@@ -518,7 +541,7 @@ def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=1))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
         return response

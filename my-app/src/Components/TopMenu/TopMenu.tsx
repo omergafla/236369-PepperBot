@@ -15,7 +15,8 @@ const TopMenu = (props: any) => {
       method: "POST",
     })
       .then(() => {
-        props.removeToken()
+        props.removeToken();
+        window.location.href = "http://localhost:3000/login";
       })
   }
 
@@ -31,7 +32,7 @@ const TopMenu = (props: any) => {
     })
       .then(res => { return res.json() })
       .then((data) => {
-        if(data && data["msg"] && data["msg"]=='Token Has Expired'){
+        if(data && data["msg"] && data["msg"]=='Token has expired'){
           window.location.href = "http://localhost:3000/login";
         }
         const username = data.username;

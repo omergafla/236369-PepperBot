@@ -54,6 +54,7 @@ function Login(props: any) {
           username: "",
           password: ""
         }))
+        window.location.href = "http://localhost:3000/";
       }).catch((error) => {
         // Do somethong else here!
         if (error.response) {

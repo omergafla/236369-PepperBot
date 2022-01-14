@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Users_Answers
 	poll_id integer,
     option_id integer,
     PRIMARY KEY (ID),
-	FOREIGN KEY (user_id) REFERENCES Users(ID),
+	FOREIGN KEY (user_id) REFERENCES Users(effective_id),
     FOREIGN KEY (poll_id) REFERENCES Polls(ID),
 	FOREIGN KEY (option_id) REFERENCES Polls_Options(ID)
 );
