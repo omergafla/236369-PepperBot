@@ -19,12 +19,18 @@ const columns: GridColDef[] = [
   { field: 'polls', headerName: 'Polls Sent', width: 150, align: 'center', headerAlign: 'center', },
 ];
 
+const headers = {
+  'Authorization': 'Bearer ' + localStorage.getItem('token'),
+  'Access-Control-Allow-Origin': "*"
+}
+
 const Admins = (props: any) => {
   const [rows, setRows] = useState<GridRowsProp>([])
   useEffect(() => {
     // GET POLLS
     const params = {
-      method: 'GET'
+      method: 'GET',
+      headers: headers
     }
     fetch(`http://localhost:5000/admins`, params)
       .then((res) => res.json())

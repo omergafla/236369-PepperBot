@@ -21,7 +21,7 @@ function App() {
           : (
             <>
               <Routes>
-                <Route path="/" element={<Home removeToken={removeToken} />}>
+                <Route path="/" element={<Home removeToken={removeToken} />}/>
                 <Route path="/login" element={<Login setToken={setToken} />}></Route>
                 <Route path="/polls/:id" element={<Poll removeToken={removeToken}/>} />
                 <Route path="/polls" element={<Polls removeToken={removeToken}/>} />

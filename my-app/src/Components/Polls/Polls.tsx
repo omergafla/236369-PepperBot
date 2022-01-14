@@ -6,14 +6,6 @@ import TopMenu from '../TopMenu/TopMenu';
 import PollGraph from '../PollGraph/PollGraph';
 import { Button } from '@mui/material';
 
-
-
-
-// const rows: GridRowsProp = [
-//   { id: 1, question: 'Hello', created_by: 'World', createt_at: '2022-01-07' },
-
-// ];
-
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 100 },
   { field: 'question', headerName: 'Question', width: 720, renderCell: (cellValues) => {
@@ -34,8 +26,11 @@ const Polls = (props: any) => {
   useEffect(() => {
     // GET POLLS
     const params = {
-      method: 'GET'
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Access-Control-Allow-Origin': "*"
     }
+  }
     fetch(`http://localhost:5000/polls`, params)
       .then((res) => res.json())
       .then((data) => {

@@ -10,6 +10,7 @@ import AddPollsForm from '../Forms/AddPollsForm/AddPollsForm';
 import AddAdminForm from '../Forms/AddAdminForm/AddAdminForm';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
+import './ScrollDialog.css'
 
 export default function ScrollDialog(props: any) {
   const { title, buttonText, actionType, poll_id, answer, username, token } = props;
@@ -62,101 +63,96 @@ export default function ScrollDialog(props: any) {
     setOpenSnackBar(false);
   };
 
+  const getParams = (result: any) => {
+    return {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': "*"
+      },
+      body: JSON.stringify(result)
+    }
+
+  }
+
+  const setSeverityAndMsgForPoll = (status: number) => {
+    switch (status) {
+      case 200:
+        setSeverity("success");
+        setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
+        break;
+      case 503:
+        setSeverity("error");
+        setMsg("No active users, poll not sent.")
+        break;
+      default:
+        setSeverity("error");
+        setMsg("Whoops! Something has gone wrong.")
+    }
+    setOpenSnackBar(true);
+    setOpen(false);
+    setQuestion("");
+    setInputFields([
+      { id: Math.random(), option: '' },
+      { id: Math.random(), option: '' }
+    ])
+  }
+
+  const handleAdmin = () => {
+    if (signUpForm.password !== signUpForm.repeatPassword) {
+      setError(true);
+      return;
+    }
+    const result = { 'username': signUpForm.username, 'password': signUpForm.password }
+    const params = getParams(result);
+    fetch("http://localhost:5000/add_admin", params)
+      .then((response) => {
+        let msg;
+        switch (response.status) {
+          case 200:
+            setSeverity("success");
+            msg = signUpForm.username + " was added as an admin succefully!"
+            setMsg(msg);
+            break;
+          case 409:
+            setSeverity("error");
+            msg = "Uh oh! An admin by the name " + signUpForm.username + " already exists, please try a different name."
+            setMsg(msg);
+            break;
+          default:
+            setSeverity("error");
+            setMsg("No need to panic, but something has gone wrong.")
+        }
+        setOpenSnackBar(true);
+        setOpen(false);
+      })
+  }
 
   const handleSubmit = () => {
     if (!validateForm(actionType)) {
       return;
     }
     if (actionType === "admin") {
-      if (signUpForm.password !== signUpForm.repeatPassword) {
-        setError(true);
-        return;
-      }
-      const result = { 'username': signUpForm.username, 'password': signUpForm.password }
-      const params = {
-        method: 'POST',
-        body: JSON.stringify(result)
-      }
-      fetch("http://localhost:5000/add_admin", params)
-        .then((response) => {
-          let msg;
-          switch (response.status) {
-            case 200:
-              setSeverity("success");
-              msg = signUpForm.username + " was added as an admin succefully!"
-              setMsg(msg);
-              break;
-            case 409:
-              setSeverity("error");
-              msg = "Uh oh! An admin by the name " + signUpForm.username + " already exists, please try a different name."
-              setMsg(msg);
-              break;
-            default:
-              setSeverity("error");
-              setMsg("No need to panic, but something has gone wrong.")
-          }
-          setOpenSnackBar(true);
-          setOpen(false);
-        })
+      handleAdmin();
     }
     if (actionType === "poll") {
       if (poll_id && answer) {
-        const header = 'Bearer ' + localStorage.getItem('token');
         const result = { 'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer': answer }
-        const params = {
-          method: 'POST',
-          headers: {
-            'Authorization': header,
-            'Access-Control-Allow-Origin': "*"
-          },
-          body: JSON.stringify(result)
-        }
+        const params = getParams(result);
         fetch("http://localhost:5000/add_sub_poll", params)
           .then((response) => {
-            switch (response.status) {
-              case 200:
-                setSeverity("success");
-                setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
-                break;
-              case 503:
-                setSeverity("error");
-                setMsg("No active users, poll not sent.")
-                break;
-              default:
-                setSeverity("error");
-                setMsg("Whoops! Something has gone wrong.")
-            }
-          }).then(() => {
-            setOpenSnackBar(true);
-            setOpen(false);
+            setSeverityAndMsgForPoll(response.status);
           })
       }
       else {
         const result = { 'question': question, 'answers': inputFields }
-        const params = {
-          method: 'POST',
-          body: JSON.stringify(result)
-        }
+        const params = getParams(result);
         fetch("http://localhost:5000/add_poll", params)
           .then((response) => {
-            switch (response.status) {
-              case 200:
-                setSeverity("success");
-                setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
-                break;
-              case 503:
-                setSeverity("error");
-                setMsg("No active users, poll not sent.")
-                break;
-              default:
-                setSeverity("error");
-                setMsg("Whoops! Something has gone wrong.")
-            }
-          }).then(() => {
-            setOpenSnackBar(true);
-            setOpen(false);
+            setSeverityAndMsgForPoll(response.status);
           })
       }
+      
     }
   };
 
@@ -187,9 +183,9 @@ export default function ScrollDialog(props: any) {
   return (
     <div>
       {poll_id ? (
-        <Button style={subPollButtonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
+        <Button className={"btn"} style={subPollButtonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
       ) : (
-        <Button style={buttonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
+        <Button className={"btn"} style={buttonStyle} variant="contained" onClick={handleOpen}>{buttonText}</Button>
       )}
       <Dialog
         fullWidth={true}

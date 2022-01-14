@@ -8,24 +8,24 @@ import PollCard from '../Cards/PollCard/PollCard';
 import GraphCard from '../Cards/GraphCard/GraphCard';
 import PieCard from '../Cards/PieCard/PieCard';
 
-export interface Iloaders{
+export interface Iloaders {
   [key: string]: boolean;
 }
 
-export interface Ipoll{
+export interface Ipoll {
   id?: number;
   question?: string;
 }
 
-export interface IdailyUser{
+export interface IdailyUser {
   date?: string;
   new_users?: number;
 }
-export interface IdailyPoll{
+export interface IdailyPoll {
   date?: string;
   new_polls?: number;
 }
-export interface IUsersRatio{
+export interface IUsersRatio {
   active?: number;
   inactive?: number;
 }
@@ -62,166 +62,141 @@ export default function BasicGrid(props: any) {
   const [dailyUsers, setDailyUsers] = useState<IdailyUser[]>([{}])
   const [dailyPolls, setDailyPolls] = useState<IdailyPoll[]>([{}])
   const [usersRatio, setUsersRatio] = useState<IUsersRatio>({})
-
-  useEffect(() =>{
-    // GET USERS, USERS_ACTIVE
-    const params = {
-      method: 'GET'
+  const params = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Access-Control-Allow-Origin': "*"
     }
+  }
+
+  useEffect(() => {
+    // GET USERS, USERS_ACTIVE
     setLoaders(loaders)
     fetch(`http://localhost:5000/users_counts_data`, params)
       .then((res) => res.json())
       .then((data) => {
         setUsers(data["total"]);
         setActiveUsers(data["active"]);
-        setUsersRatio({"active": data["active"], "inactive": data["inactive"]})
+        setUsersRatio({ "active": data["active"], "inactive": data["inactive"] })
       });
-      loaders["users"] = false;
-      loaders["active_users"] = false;
-      loaders["active_users_ratio"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["users"] = false;
+    loaders["active_users"] = false;
+    loaders["active_users_ratio"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET POLLS
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/polls_counts`, params)
       .then((res) => res.json())
       .then((data) => {
         setPolls(data["total"]);
       });
-      loaders["polls"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["polls"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET ADMINS
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/admins_counts`, params)
       .then((res) => res.json())
       .then((data) => {
         setAdmins(data["total"]);
       });
-      loaders["admins"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["admins"] = false;
+    setLoaders(loaders);
+  }, []);
 
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Today Polls
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/today_polls`, params)
       .then((res) => res.json())
       .then((data) => {
         setTodayPolls(data["total"]);
       });
-      loaders["today_polls"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["today_polls"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Today Active Users
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/acctive_users_today`, params)
       .then((res) => res.json())
       .then((data) => {
         setActiveUsersToday(data["total"]);
       });
-      loaders["active_users_today"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["active_users_today"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Popular Poll
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/most_popular_poll`, params)
       .then((res) => res.json())
       .then((data) => {
-        setPopularPoll({id: data["poll_id"], question: data["question"]});
+        setPopularPoll({ id: data["poll_id"], question: data["question"] });
       });
-      loaders["popular_poll"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["popular_poll"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Newest Poll
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/newest_poll`, params)
       .then((res) => res.json())
       .then((data) => {
-        setNewestPoll({id: data["id"], question: data["question"]});
+        setNewestPoll({ id: data["id"], question: data["question"] });
       });
-      loaders["newest_poll"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["newest_poll"] = false;
+    setLoaders(loaders);
+  }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Daily Users
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/daily_users`, params)
       .then((res) => res.json())
       .then((data) => {
         setDailyUsers(data);
       });
-      loaders["daily_users"] = false;
-      setLoaders(loaders);
-  },[]);
+    loaders["daily_users"] = false;
+    setLoaders(loaders);
+  }, []);
 
 
-  useEffect(() =>{
+  useEffect(() => {
     // GET Daily Polls
-    const params = {
-      method: 'GET'
-    }
     setLoaders(loaders)
     fetch(`http://localhost:5000/daily_polls`, params)
       .then((res) => res.json())
       .then((data) => {
         setDailyPolls(data);
       });
-      loaders["daily_polls"] = false;
-      setLoaders(loaders);
-  
-    },[]);
+    loaders["daily_polls"] = false;
+    setLoaders(loaders);
+
+  }, []);
 
   return (
     <div className={styles.dashboard}>
-        <div className={styles.div1}> <BasicCard backColor={"#FDCACE"} loading={loaders.users} data={users} label={"Users"} /> </div>
-        <div className={styles.div2}> <BasicCard backColor={"#FEF1EB"} loading={loaders.active_users} data={activeUsers} label={"Active Users"} /></div>
-        <div className={styles.div3}> <BasicCard backColor={"#D2E6D5"} loading={loaders.polls} data={polls} label={"Polls"} /></div>
-        <div className={styles.div4}> <BasicCard backColor={"#D5C5E8"} loading={loaders.today_polls} data={todayPolls} label={"New Polls Today"} /></div>
-        <div className={styles.div5}> <BasicCard backColor={"#FBE7C5"} loading={loaders.admins} data={admins} label={"Admins"} /></div>
-        <div className={styles.div6}> <BasicCard backColor={"#F7D3BC"} loading={loaders.active_users_today} data={activeUsersToday} label={"Active Users Today"} /></div>
-        <div className={styles.div7}> <PollCard loading={loaders.popular_poll} poll_question={popularPoll.question} poll_id={popularPoll.id} label={"Most Popular Poll"}/></div>
-        <div className={styles.div8}> <PollCard loading={loaders.newest_poll} poll_question={newestPoll.question} poll_id={newestPoll.id} label={"Newest Poll"} /></div>
-        <div className={styles.div9}> <GraphCard loading={loaders.daily_users} data={dailyUsers} xAxis={"date"} yAxis={"new_users"}  label={"New Users per Day"}/></div>
-        <div className={styles.div10}> <GraphCard loading={loaders.daily_polls} data={dailyPolls} xAxis={"date"} yAxis={"new_polls"} label={"New Polls per Day"}/></div>
-        <div className={styles.div11}> <PieCard loading={loaders.active_users_ratio} active={usersRatio.active} inactive={usersRatio.inactive} label={"Active Users Ratio"}/>  </div>
-        {/* <div className={styles.div12}> <BasicCard loading={loaders.most_answered_polls} data={"#45 Where is the best pizza in Haifa?"} label={"Most Popular Polls"}/> </div>
-        <div className={styles.div13}> <BasicCard loading={loaders.admins_compare} data={"#45 Where is the best pizza in Haifa?"} label={"Admins Activity"}/> </div>
-        <div className={styles.div14}> <BasicCard loading={loaders.most_clear} data={"#45 Where is the best pizza in Haifa?"} label={"Easiest Decision"}/> </div> */}
-
+      <div className={styles.div1}> <BasicCard backColor={"#FDCACE"} loading={loaders.users} data={users} label={"Users"} /> </div>
+      <div className={styles.div2}> <BasicCard backColor={"#FEF1EB"} loading={loaders.active_users} data={activeUsers} label={"Active Users"} /></div>
+      <div className={styles.div3}> <BasicCard backColor={"#D2E6D5"} loading={loaders.polls} data={polls} label={"Polls"} /></div>
+      <div className={styles.div4}> <BasicCard backColor={"#D5C5E8"} loading={loaders.today_polls} data={todayPolls} label={"New Polls Today"} /></div>
+      <div className={styles.div5}> <BasicCard backColor={"#FBE7C5"} loading={loaders.admins} data={admins} label={"Admins"} /></div>
+      <div className={styles.div6}> <BasicCard backColor={"#F7D3BC"} loading={loaders.active_users_today} data={activeUsersToday} label={"Active Users Today"} /></div>
+      <div className={styles.div7}> <PollCard loading={loaders.popular_poll} poll_question={popularPoll.question} poll_id={popularPoll.id} label={"Most Popular Poll"} /></div>
+      <div className={styles.div8}> <PollCard loading={loaders.newest_poll} poll_question={newestPoll.question} poll_id={newestPoll.id} label={"Newest Poll"} /></div>
+      <div className={styles.div9}> <GraphCard loading={loaders.daily_users} data={dailyUsers} xAxis={"date"} yAxis={"new_users"} label={"New Users per Day"} /></div>
+      <div className={styles.div10}> <GraphCard loading={loaders.daily_polls} data={dailyPolls} xAxis={"date"} yAxis={"new_polls"} label={"New Polls per Day"} /></div>
+      <div className={styles.div11}> <PieCard loading={loaders.active_users_ratio} active={usersRatio.active} inactive={usersRatio.inactive} label={"Active Users Ratio"} />  </div>
     </div>
   );
 }

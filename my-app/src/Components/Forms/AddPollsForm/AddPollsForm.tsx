@@ -6,6 +6,8 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Tooltip from '@mui/material/Tooltip';
 
 const AddPollsForm = (props: any) => {
   const {inputFields, setInputFields, question, setQuestion } = props;
@@ -37,6 +39,11 @@ const AddPollsForm = (props: any) => {
 
   return (
     <div className={styles.formWrap}>
+      <Tooltip arrow placement="top" className="tooltip" title="To add a poll dependant on a previous one, please go to 'Polls' page and choose the poll you want to base on">
+      <IconButton>
+        <InfoOutlinedIcon color="secondary"/>
+      </IconButton>
+    </Tooltip>
       <form className={styles.AddPollsForm}>
           <TextField
               name="question"
