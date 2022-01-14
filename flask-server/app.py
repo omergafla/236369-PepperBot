@@ -395,16 +395,16 @@ def add_poll():
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
         
-        sql_string = "INSERT INTO polls (question, created_at, created_by) VALUES ('{question}', '{time_now}', '{username}') RETURNING id".format(
-            question=poll["question"], time_now=time_now, username=poll["username"].lower())
+        sql_string = '''INSERT INTO polls (question, created_at, created_by) VALUES ('{question}', '{time_now}', '{username}') RETURNING id'''.format(
+            question=poll["question"].replace("'", ""), time_now=time_now, username=poll["username"].lower())
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
             _id = result[0]["id"]
             for answer in poll['answers']:
                 flatten_answers.append(answer["option"])
-                sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(
-                    id=_id, answer=answer["option"])
+                sql_string = '''INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')'''.format(
+                    id=_id, answer=answer["option"].replace("'", ""))
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             send_poll(_id, poll["question"], flatten_answers)
@@ -420,7 +420,7 @@ def add_admin():
         response = app.response_class(status=200)
         data = json.loads(request.data)
         sql_string = "INSERT INTO Admins (username, password) VALUES ('{username}', '{password}')".format(
-            username=data["username"].lower(), password=hash_password(data["password"]))
+            username=data["username"].lower().replace("'", ""), password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
         #return error here
@@ -443,7 +443,7 @@ def add_sub_poll():
         username = get_jwt()["sub"]
         permission = get_option_id(poll["poll_id"], poll["answer"])
         sql_string = "INSERT INTO polls (question, permission, created_at, parent, created_by) VALUES ('{question}', {permission}, '{time_now}', {parent}, '{username}') RETURNING id".format(
-            question=poll["question"], permission=permission, time_now=time_now, parent=poll["poll_id"], username=username)
+            question=poll["question"].replace("'", ""), permission=permission, time_now=time_now, parent=poll["poll_id"], username=username)
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
@@ -451,7 +451,7 @@ def add_sub_poll():
             for answer in poll['answers']:
                 flatten_answers.append(answer["option"])
                 sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(
-                    id=_id, answer=answer["option"])
+                    id=_id, answer=answer["option"].replace("'", ""))
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             users = get_users_for_sub_poll(permission)
