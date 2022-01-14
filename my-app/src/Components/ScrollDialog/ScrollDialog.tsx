@@ -12,7 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 
 export default function ScrollDialog(props: any) {
-  const { title, buttonText, actionType, poll_id, answer } = props;
+  const { title, buttonText, actionType, poll_id, answer, username, token } = props;
   const [open, setOpen] = React.useState(false);
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
   const [severity, setSeverity] = useState("success" as AlertColor);
@@ -34,7 +34,7 @@ export default function ScrollDialog(props: any) {
 
   function validateForm(action: string) {
     const res = action === "admin" ?
-      signUpForm.username.length > 0 && signUpForm.password.length > 0:
+      signUpForm.username.length > 0 && signUpForm.password.length > 0 :
       question.length > 0 && inputFields[0].option.length > 0 && inputFields[1].option.length > 0;
     const res2 = signUpForm.username.length < 50;
     if (!res) {
@@ -42,7 +42,7 @@ export default function ScrollDialog(props: any) {
       setMsg("Fields cannot be empty! Please fill all fields to proceed");
       setOpenSnackBar(true);
     }
-    if (!res2){
+    if (!res2) {
       setSeverity("error");
       setMsg("Username cannot be greater than 50 characters");
       setOpenSnackBar(true);
@@ -101,9 +101,14 @@ export default function ScrollDialog(props: any) {
     }
     if (actionType === "poll") {
       if (poll_id && answer) {
+        const header = 'Bearer ' + localStorage.getItem('token');
         const result = { 'question': question, 'answers': inputFields, 'poll_id': poll_id, 'answer': answer }
         const params = {
           method: 'POST',
+          headers: {
+            'Authorization': header,
+            'Access-Control-Allow-Origin': "*"
+          },
           body: JSON.stringify(result)
         }
         fetch("http://localhost:5000/add_sub_poll", params)
@@ -126,7 +131,6 @@ export default function ScrollDialog(props: any) {
             setOpen(false);
           })
       }
-
       else {
         const result = { 'question': question, 'answers': inputFields }
         const params = {

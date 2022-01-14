@@ -16,3 +16,18 @@ h4{
     align-items: center;
     gap: 2vh;
 }
+
+.navigator{
+    /* margin: 0 10vw; */
+    font-size: 9px;
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 100%;
+    background-color: #8884d877;
+    height: 10px !important;
+    width: 10px !important;
+    cursor: pointer;
+    display: inline-block;
+    position:absolute;
+    top:50%;
+}

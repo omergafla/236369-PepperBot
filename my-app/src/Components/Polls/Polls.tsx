@@ -16,13 +16,15 @@ import { Button } from '@mui/material';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 100 },
-  {
-    field: 'question', headerName: 'Question', width: 800, renderCell: (cellValues) => {
-      const url = '/polls/' + cellValues.row["id"];
-      return <a href={url}>{(cellValues.row["question"])}</a>;
-    }
-  },
+  { field: 'question', headerName: 'Question', width: 720, renderCell: (cellValues) => {
+    const url = '/polls/'+cellValues.row["id"];
+    return <a href={url}>{(cellValues.row["question"])}</a>;
+  }},
   { field: 'answers', headerName: 'Answers', width: 100 },
+  { field: 'parent', headerName: 'Parent', width: 100, renderCell: (cellValues) => {
+    const url = '/polls/'+cellValues.row["parent"];
+    return <a href={url}>{(cellValues.row["parent"])}</a>;
+  }},
   { field: 'created_by', headerName: 'Created By', width: 150 },
   { field: 'created_at', headerName: 'Created At', width: 150 },
 ];

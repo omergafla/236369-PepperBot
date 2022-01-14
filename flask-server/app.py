@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS, cross_origin
 from flask_session import Session
-
+import config
 import json
 from psycopg2 import sql
 from datetime import datetime, timedelta, timezone
@@ -25,11 +25,11 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
 app.config["SESSION_TYPE"] = 'null'
+app.config["SECRET_KEY"] = "22222"
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
 jwt = JWTManager(app)
 app.config.from_object(__name__)
-# app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 
 def map_result(obj):
@@ -82,7 +82,7 @@ def get_option_id(poll_id, option):
 
 
 def get_users_for_sub_poll(permission):
-    sql_string = "select distinct user_id from users_answers where option_id={permission}".format(
+    sql_string = "select distinct user_id from users_answers where option_id={permission} and is_avtice=1".format(
         permission=permission)
     users = map_result(sql_call(sql_string))
     ids = [user['user_id'] for user in users]
@@ -198,7 +198,7 @@ def get_admins():
 @app.route("/polls")
 def get_all_polls():
     try:
-        sql_string = """select polls.id, question, created_by, created_at, answers 
+        sql_string = """select polls.id, question, created_by, created_at, answers , parent
                         from polls 
                         left join polls_popularity t on t.id = polls.id"""
         db_result = sql_call(sql_string)
@@ -381,16 +381,17 @@ def add_poll():
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
-        sql_string = "INSERT INTO polls (question, created_at) VALUES ('{question}', '{time_now}') RETURNING id".format(
-            question=poll["question"], time_now=time_now)
+        
+        sql_string = '''INSERT INTO polls (question, created_at, created_by) VALUES ('{question}', '{time_now}', '{username}') RETURNING id'''.format(
+            question=poll["question"].replace("'", ""), time_now=time_now, username=poll["username"].lower())
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
             _id = result[0]["id"]
             for answer in poll['answers']:
                 flatten_answers.append(answer["option"])
-                sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(
-                    id=_id, answer=answer["option"])
+                sql_string = '''INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')'''.format(
+                    id=_id, answer=answer["option"].replace("'", ""))
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             active_users = get_active_users()
@@ -410,7 +411,7 @@ def add_admin():
         response = app.response_class(status=200)
         data = json.loads(request.data)
         sql_string = "INSERT INTO Admins (username, password) VALUES ('{username}', '{password}')".format(
-            username=data["username"], password=hash_password(data["password"]))
+            username=data["username"].lower().replace("'", ""), password=hash_password(data["password"]))
         result = sql_call(sql_string)
     except Exception as e:
         if e.message == 'UNIQUE_VIOLATION':
@@ -422,15 +423,17 @@ def add_admin():
 
 
 @app.route("/add_sub_poll", methods=['POST'])
+@jwt_required()
 def add_sub_poll():
     try:
         response = app.response_class(status=200)
         data = request.data
         poll = json.loads(data)
         time_now = datetime.now().strftime('%Y-%m-%d')
+        username = get_jwt()["sub"]
         permission = get_option_id(poll["poll_id"], poll["answer"])
-        sql_string = "INSERT INTO polls (question, permission, created_at) VALUES ('{question}', {permission}, '{time_now}') RETURNING id".format(
-            question=poll["question"], permission=permission, time_now=time_now)
+        sql_string = "INSERT INTO polls (question, permission, created_at, parent, created_by) VALUES ('{question}', {permission}, '{time_now}', {parent}, '{username}') RETURNING id".format(
+            question=poll["question"].replace("'", ""), permission=permission, time_now=time_now, parent=poll["poll_id"], username=username)
         result = sql_call(sql_string)
         flatten_answers = []
         if result:
@@ -438,7 +441,7 @@ def add_sub_poll():
             for answer in poll['answers']:
                 flatten_answers.append(answer["option"])
                 sql_string = "INSERT INTO polls_options (poll_id, option) VALUES ({id}, '{answer}')".format(
-                    id=_id, answer=answer["option"])
+                    id=_id, answer=answer["option"].replace("'", ""))
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             users = get_users_for_sub_poll(permission)
@@ -470,6 +473,29 @@ def get_poll(poll_id):
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
         response = app.response_class(status=500)
+    finally:
+        return response
+
+@app.route("/poll/<poll_id>/siblings")
+def get_poll_siblings(poll_id):
+    try:
+        response = app.response_class(status=200)
+        sql_string = """select prev, next
+                        from (
+                            select id, 
+                                lag(id) over (order by id) as prev,
+                                lead(id) over (order by id) as next
+                            from polls
+                        ) as t
+                        where t.id = {id};""".format(id=poll_id)
+        result = (map_result(sql_call(sql_string)))
+        response = app.response_class(response=json.dumps(result[0]),
+                                      status=200,
+                                      mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except Exception as e:
+        response = app.response_class(status=500)
+        print(str(e))
     finally:
         return response
 
@@ -533,10 +559,10 @@ def create_token():
         result = sql_call(sql_string)
         if len(result.rows) != 1:  # admin doesnt exist
             return app.response_class(status=401)
-        result_dict = map_result(result)[0]
         if (username == "admin"):
-            correct_password = password == result_dict["password"]
+            correct_password = password == config.password
         else:
+            result_dict = map_result(result)[0]
             correct_password = verify_password(
                 password, result_dict["password"])
         if correct_password == False:  # wrong password
@@ -548,7 +574,7 @@ def create_token():
                                       mimetype='application/json')
     except Exception as e:
         return app.response_class(status=500)
-    return response
+    
 
 
 @app.route("/logout", methods=["POST"])

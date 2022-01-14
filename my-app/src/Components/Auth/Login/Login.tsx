@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Login.module.css';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 
 
 function Login(props: any) {
-
+  
   const { setToken } = props;
   const [loginForm, setloginForm] = useState({
     username: "",
@@ -19,6 +19,9 @@ function Login(props: any) {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
 
+  useEffect(() => {
+    window.history.replaceState("", "", "/login");
+  }, []);
 
   function validateForm() {
     return loginForm.username.length > 0 && loginForm.password.length > 0;
@@ -54,6 +57,7 @@ function Login(props: any) {
           username: "",
           password: ""
         }))
+        window.location.href = "http://localhost:3000/";
       }).catch((error) => {
         // Do somethong else here!
         if (error.response) {
