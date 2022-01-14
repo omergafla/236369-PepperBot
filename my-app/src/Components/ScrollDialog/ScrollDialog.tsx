@@ -34,14 +34,20 @@ export default function ScrollDialog(props: any) {
 
   function validateForm(action: string) {
     const res = action === "admin" ?
-      signUpForm.username.length > 0 && signUpForm.password.length > 0 :
+      signUpForm.username.length > 0 && signUpForm.password.length > 0:
       question.length > 0 && inputFields[0].option.length > 0 && inputFields[1].option.length > 0;
+    const res2 = signUpForm.username.length < 50;
     if (!res) {
       setSeverity("error");
       setMsg("Fields cannot be empty! Please fill all fields to proceed");
       setOpenSnackBar(true);
     }
-    return res;
+    if (!res2){
+      setSeverity("error");
+      setMsg("Username cannot be greater than 50 characters");
+      setOpenSnackBar(true);
+    }
+    return res && res2;
   }
 
   const handleOpen = () => {
@@ -107,6 +113,10 @@ export default function ScrollDialog(props: any) {
                 setSeverity("success");
                 setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
                 break;
+              case 503:
+                setSeverity("error");
+                setMsg("No active users, poll not sent.")
+                break;
               default:
                 setSeverity("error");
                 setMsg("Whoops! Something has gone wrong.")
@@ -130,6 +140,10 @@ export default function ScrollDialog(props: any) {
                 setSeverity("success");
                 setMsg("Poll added and sent to the users succefuly! Stay tuned for results...")
                 break;
+              case 503:
+                setSeverity("error");
+                setMsg("No active users, poll not sent.")
+                break;
               default:
                 setSeverity("error");
                 setMsg("Whoops! Something has gone wrong.")
@@ -141,7 +155,7 @@ export default function ScrollDialog(props: any) {
       }
     }
   };
-  // #leapes
+
 
   const descriptionElementRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {

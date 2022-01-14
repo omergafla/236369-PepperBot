@@ -6,7 +6,7 @@ import json
 from psycopg2 import sql
 from datetime import datetime, timedelta, timezone
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, \
-    unset_jwt_cookies, jwt_required, JWTManager
+    unset_jwt_cookies, jwt_required, JWTManager, set_access_cookies
 import json
 import requests
 import telegram
@@ -23,15 +23,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "tRWzJbjLnVWJezAU"
-app.config["SECRET_KEY"] = "22222"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
 app.config["SESSION_TYPE"] = 'null'
-# app.config.from_object(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 Session(app)
 jwt = JWTManager(app)
 app.config.from_object(__name__)
-app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+# app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 
 def map_result(obj):
@@ -395,7 +393,11 @@ def add_poll():
                     id=_id, answer=answer["option"])
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
-            send_poll(_id, poll["question"], flatten_answers)
+            active_users = get_active_users()
+            if len(active_users) == 0:
+                response = app.response_class(status=503)
+            else:
+                send_poll(_id, poll["question"], flatten_answers)
     except Exception as e:
         response = app.response_class(status=500)
     finally:
@@ -440,7 +442,10 @@ def add_sub_poll():
                 result = sql_call(sql_string)
             print("Added Poll: #" + str(_id))
             users = get_users_for_sub_poll(permission)
-            send_poll(_id, poll["question"], flatten_answers, users)
+            if len(users) == 0:
+                response = app.response_class(status=503)
+            else:
+                send_poll(_id, poll["question"], flatten_answers, users)
     except Exception as e:
         response = app.response_class(status=500)
     finally:
@@ -487,25 +492,33 @@ def add_answer():
 @app.route("/username")
 @cross_origin()
 @jwt_required()
-def getUsername():
-    username = get_jwt()["sub"]
-    response = jsonify({"username": username})
-    return response
+def get_username():
+    try:
+        username = get_jwt()["sub"]
+        response = app.response_class(response=json.dumps({"username":username}),
+                                      status=200,
+                                      mimetype='application/json')
+    except Exception as e:
+        response = app.response_class(status=500)
+    finally:
+        return response
+
 
 
 ####################################Authentication Routes###################################
-@app.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original respone
-        return response
+# @app.after_request
+# def refresh_expiring_jwts(response):
+#     try:
+#         exp_timestamp = get_jwt()["exp"]
+#         now = datetime.now(timezone.utc)
+#         target_timestamp = datetime.timestamp(now + timedelta(minutes=5))
+#         if target_timestamp > exp_timestamp:
+#             access_token = create_access_token(identity=get_jwt_identity())
+#             set_access_cookies(response, access_token)
+#         return response
+#     except (RuntimeError, KeyError) as e:
+#         # Case where there is not a valid JWT. Just return the original respone
+#         return response
 
 
 @app.route('/token', methods=["POST"])
@@ -529,6 +542,7 @@ def create_token():
         if correct_password == False:  # wrong password
             return app.response_class(status=401)
         access_token = create_access_token(identity=username)
+        
         response = app.response_class(response=json.dumps({"access_token": access_token}),
                                       status=200,
                                       mimetype='application/json')
@@ -539,8 +553,13 @@ def create_token():
 
 @app.route("/logout", methods=["POST"])
 def logout():
-    response = jsonify({"msg": "logout successful"})
-    unset_jwt_cookies(response)
+    try:
+        response = app.response_class(status=200)
+        unset_jwt_cookies(response)
+    except Exception as e:
+        response = app.response_class(status=500)
+    finally:
+        return response
     return response
 
 

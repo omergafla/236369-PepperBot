@@ -16,10 +16,12 @@ import { Button } from '@mui/material';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 100 },
-  { field: 'question', headerName: 'Question', width: 800, renderCell: (cellValues) => {
-    const url = '/polls/'+cellValues.row["id"];
-    return <a href={url}>{(cellValues.row["question"])}</a>;
-  }},
+  {
+    field: 'question', headerName: 'Question', width: 800, renderCell: (cellValues) => {
+      const url = '/polls/' + cellValues.row["id"];
+      return <a href={url}>{(cellValues.row["question"])}</a>;
+    }
+  },
   { field: 'answers', headerName: 'Answers', width: 100 },
   { field: 'created_by', headerName: 'Created By', width: 150 },
   { field: 'created_at', headerName: 'Created At', width: 150 },
@@ -27,26 +29,26 @@ const columns: GridColDef[] = [
 
 const Polls = (props: any) => {
   const [rows, setRows] = useState<GridRowsProp>([])
-useEffect(() =>{
-  // GET POLLS
-  const params = {
-    method: 'GET'
-  }
-  fetch(`http://localhost:5000/polls`, params)
-    .then((res) => res.json())
-    .then((data) => {
-      setRows(data.result);
-    });
-
-},[]);
+  useEffect(() => {
+    // GET POLLS
+    const params = {
+      method: 'GET'
+    }
+    fetch(`http://localhost:5000/polls`, params)
+      .then((res) => res.json())
+      .then((data) => {
+        setRows(data.result);
+      });
+  }, []);
   return (
-  <div className={styles.Poll}>
-    <TopMenu removeToken={props.removeToken} token={props.token}/>
-    <div className={styles.wrap}>
-      <DataGrid rows={rows} columns={columns} />
+    <div className={styles.Poll}>
+      <TopMenu removeToken={props.removeToken} />
+      <div className={styles.wrap}>
+        <DataGrid rows={rows} columns={columns} />
+      </div>
     </div>
-  </div>
-)}
+  )
+}
 
 export default Polls;
 
