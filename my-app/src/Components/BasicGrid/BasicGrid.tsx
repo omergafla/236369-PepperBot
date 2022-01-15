@@ -154,7 +154,7 @@ export default function BasicGrid(props: any) {
     fetch(`http://localhost:5000/newest_poll`, params)
       .then((res) => res.json())
       .then((data) => {
-        if (data["poll_id"] && data["question"])
+        if (data["id"] && data["question"])
           setNewestPoll({ id: data["id"], question: data["question"] });
       });
     loaders["newest_poll"] = false;

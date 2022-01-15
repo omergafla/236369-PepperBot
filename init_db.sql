@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS Users
 (
     ID SERIAL,
-    effective_id integer NOT NULL,
+    effective_id bigint NOT NULL,
     username VARCHAR(50) NOT NULL,
     is_active integer DEFAULT 1,
     created_at date,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS Polls_Options
 CREATE TABLE IF NOT EXISTS Users_Answers
 (
     ID SERIAL,
-    user_id integer,
+    user_id bigint,
 	poll_id integer,
     option_id integer,
     PRIMARY KEY (ID),
