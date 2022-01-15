@@ -4,7 +4,9 @@
 https://github.com/omergafla/236369-PepperBot
 
 ### INIT:
+```
 python .\build\run_project.py
+```
 
 this command will run simultaneisoly the flask server, react client and the telegram bot handler, also create the DB infrastructure for the project and handles the client side dependencies.
 
