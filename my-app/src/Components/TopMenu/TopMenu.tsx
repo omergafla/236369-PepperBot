@@ -26,7 +26,7 @@ const TopMenu = (props: any) => {
   const getUsername = () => {
     fetch("http://localhost:5000/username", {
       headers: {
-        'Authorization': 'Bearer '+props.token,
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
         'Access-Control-Allow-Origin': "*"
       }
     })
@@ -45,9 +45,6 @@ const TopMenu = (props: any) => {
   
 
   const buttonStyle = {
-    // color: "#8884d8",
-    // backgroundColor: "white",
-    // marginRight: "2vh"
     marginRight: "1.5vh",
     background: "transparent",
     color: "white",
@@ -67,7 +64,7 @@ const TopMenu = (props: any) => {
             <a href="/polls"><Button className={"hoverbold"} style={buttonStyle} variant="contained">Polls</Button></a>
             <ScrollDialog username={username} title={"Create Your New Poll"} buttonText={"Create Poll"} actionType={"poll"} />
             <ScrollDialog title={"Add New Admin To The System"} buttonText={"Add Admin"} actionType={"admin"} />
-            <Button style={buttonStyle} variant="contained" onClick={handleLogout}>Logout</Button>
+            <Button className={"hoverbold"} style={buttonStyle} variant="contained" onClick={handleLogout}>Logout</Button>
           </div>
         </Toolbar>
       </AppBar>

@@ -93,7 +93,7 @@ function Login(props: any) {
         <TextField className={styles.Margin} id="password" label="Password" type="password" variant="outlined" autoComplete="current-password" error={error} onChange={handleChange} />
         <Button onClick={logMeIn} variant="contained">Login</Button>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={"error"} sx={{ width: '100%' }}>
+          <Alert variant="filled" onClose={handleClose} severity={"error"} sx={{ width: '100%' }}>
             {msg}
           </Alert>
         </Snackbar>

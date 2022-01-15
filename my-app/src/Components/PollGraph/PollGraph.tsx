@@ -28,11 +28,14 @@ const PollGraph = (props: any) => {
   const [next, setNext] = useState<number>();
   const [prev, setPrev] = useState<number>();
   let { id } = props;
+  const params = {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      'Access-Control-Allow-Origin': "*"
+    }
+  }
 
   const getPoll = () => {
-    const params = {
-      method: 'GET'
-    }
     fetch(`http://localhost:5000/poll/${id}`, params)
       .then((res) => res.json())
       .then((data) => {
@@ -46,9 +49,6 @@ const PollGraph = (props: any) => {
   }
 
   const getSiblings = () => {
-    const params = {
-      method: 'GET'
-    }
     fetch(`http://localhost:5000/poll/${id}/siblings`, params)
       .then((res) => res.json())
       .then((data) => {

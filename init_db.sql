@@ -9,6 +9,15 @@ CREATE TABLE IF NOT EXISTS Users
     UNIQUE (effective_id)
 );
 
+CREATE TABLE IF NOT EXISTS Admins
+(
+    ID SERIAL,
+    username VARCHAR(50),
+	password VARCHAR(128),
+    PRIMARY KEY (ID),
+    UNIQUE (username)
+);
+
 CREATE TABLE IF NOT EXISTS Polls
 (
     ID SERIAL,
@@ -42,14 +51,6 @@ CREATE TABLE IF NOT EXISTS Users_Answers
 	FOREIGN KEY (option_id) REFERENCES Polls_Options(ID)
 );
 
-CREATE TABLE IF NOT EXISTS Admins
-(
-    ID SERIAL,
-    username VARCHAR(50),
-	password VARCHAR(128),
-    PRIMARY KEY (ID),
-    UNIQUE (username)
-);
 
 CREATE OR REPLACE VIEW questions_and_answers
  AS
