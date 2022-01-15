@@ -299,7 +299,9 @@ def get_newest_poll():
         sql_string = """select id, question from polls order by id desc limit 1"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
-        response = app.response_class(response=json.dumps(result[0]),
+        if len(result) > 0:
+            result = result[0]
+        response = app.response_class(response=json.dumps(result),
                                       status=200,
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -318,7 +320,9 @@ def get_popular_poll():
         left join polls on t.poll_id = polls.id"""
         db_result = sql_call(sql_string)
         result = map_result(db_result)
-        response = app.response_class(response=json.dumps(result[0]),
+        if len(result) > 0:
+            result = result[0]
+        response = app.response_class(response=json.dumps(result),
                                       status=200,
                                       mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
@@ -549,21 +553,6 @@ def get_username():
 
 
 ####################################Authentication Routes###################################
-# @app.after_request
-# def refresh_expiring_jwts(response):
-#     try:
-#         exp_timestamp = get_jwt()["exp"]
-#         now = datetime.now(timezone.utc)
-#         target_timestamp = datetime.timestamp(now + timedelta(minutes=5))
-#         if target_timestamp > exp_timestamp:
-#             access_token = create_access_token(identity=get_jwt_identity())
-#             set_access_cookies(response, access_token)
-#         return response
-#     except (RuntimeError, KeyError) as e:
-#         # Case where there is not a valid JWT. Just return the original respone
-#         return response
-
-
 @app.route('/token', methods=["POST"])
 @cross_origin()
 def create_token():

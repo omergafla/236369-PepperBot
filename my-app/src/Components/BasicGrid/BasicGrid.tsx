@@ -140,7 +140,9 @@ export default function BasicGrid(props: any) {
     fetch(`http://localhost:5000/most_popular_poll`, params)
       .then((res) => res.json())
       .then((data) => {
-        setPopularPoll({ id: data["poll_id"], question: data["question"] });
+        if (data["poll_id"] && data["question"]) {
+          setPopularPoll({ id: data["poll_id"], question: data["question"] });
+        }
       });
     loaders["popular_poll"] = false;
     setLoaders(loaders);
@@ -152,7 +154,8 @@ export default function BasicGrid(props: any) {
     fetch(`http://localhost:5000/newest_poll`, params)
       .then((res) => res.json())
       .then((data) => {
-        setNewestPoll({ id: data["id"], question: data["question"] });
+        if (data["poll_id"] && data["question"])
+          setNewestPoll({ id: data["id"], question: data["question"] });
       });
     loaders["newest_poll"] = false;
     setLoaders(loaders);
