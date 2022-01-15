@@ -488,9 +488,12 @@ def get_poll(poll_id):
                         group by question, option, poll_id
                         order by counts asc""".format(id=poll_id)
         result = reduce_poll_data(map_result(sql_call(sql_string)))
+                    
         response = app.response_class(response=json.dumps(result),
                                       status=200,
                                       mimetype='application/json')
+        if len(result) == 0:
+            response = app.response_class(status=404)
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
         response = app.response_class(status=500)
@@ -526,7 +529,7 @@ def get_poll_siblings(poll_id):
 def add_answer():
     try:
         chat_id, poll_id, answer = request.form["chat_id"], request.form["poll_id"], request.form["answer"]
-        option_id = get_option_id(poll_id, answer)
+        option_id = get_option_id(poll_id, answer.replace("'", ""))
         sql_query_string = sql.SQL(
             f"INSERT INTO users_answers (user_id, poll_id, option_id) VALUES ({chat_id}, '{poll_id}', '{option_id}')")
         result = sql_call(sql_query_string)
@@ -557,7 +560,7 @@ def get_username():
 @cross_origin()
 def create_token():
     try:
-        username = json.loads(request.data)["username"]
+        username = json.loads(request.data)["username"].lower()
         password = json.loads(request.data)["password"]
         if username is None or password is None:
             response = app.response_class(status=400)

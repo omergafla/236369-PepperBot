@@ -8,7 +8,7 @@ import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Resp
 
 
 export default function (props: any) {
-  const { loading, label, xAxis, yAxis, data } = props;
+  const { loading, label, xAxis, yAxis, data, color } = props;
   return (
   <div className={styles.GraphCard}>
       <div>
@@ -26,7 +26,7 @@ export default function (props: any) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={yAxis} fill="#8884d8" />
+            <Bar dataKey={yAxis} fill={color} />
         </BarChart>
         </ResponsiveContainer>
         }

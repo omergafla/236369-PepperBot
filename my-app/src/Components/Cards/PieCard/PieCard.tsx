@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import styles from './PieCard.module.css'
 import { useState, useCallback } from 'react';
-import {  PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 
 const renderActiveShape = (props: any) => {
   const RADIAN = Math.PI / 180;
@@ -95,30 +95,30 @@ export default function (props: any) {
 
 
   return (
-  <div className={styles.PieCard}>
+    <div className={styles.PieCard}>
       <div>
         <Typography variant="h6" component="div" align="center" className={styles.pushDown}>
           {label}
         </Typography>
         <div>
-        {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) : 
-        <ResponsiveContainer width="95.5%" height={400} className={styles.Container}>
-          <PieChart width={400} height={400}>
-      <Pie
-        activeIndex={activeIndex}
-        activeShape={renderActiveShape}
-        data={data}
-        cx={200}
-        cy={200}
-        innerRadius={60}
-        outerRadius={80}
-        fill="#8884d8"
-        dataKey="value"
-        onMouseEnter={onPieEnter}
-      />
-    </PieChart>
-        </ResponsiveContainer>
-        }
+          {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) :
+            <ResponsiveContainer width="95.5%" height={400} className={styles.Container}>
+              <PieChart width={400} height={400}>
+                <Pie
+                  activeIndex={activeIndex}
+                  activeShape={renderActiveShape}
+                  data={data}
+                  cx={200}
+                  cy={200}
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  onMouseEnter={onPieEnter}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          }
         </div>
       </div>
     </div>

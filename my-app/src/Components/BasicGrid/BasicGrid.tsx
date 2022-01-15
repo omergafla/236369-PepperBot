@@ -77,7 +77,9 @@ export default function BasicGrid(props: any) {
       .then((data) => {
         setUsers(data["total"]);
         setActiveUsers(data["active"]);
-        setUsersRatio({ "active": data["active"], "inactive": data["inactive"] })
+        data["total"] === 0 ?
+        setUsersRatio({ "active": 0, "inactive": 100 })
+        :setUsersRatio({ "active": data["active"], "inactive": data["inactive"] })
       });
     loaders["users"] = false;
     loaders["active_users"] = false;
@@ -197,8 +199,8 @@ export default function BasicGrid(props: any) {
       <div className={styles.div6}> <BasicCard backColor={"#F7D3BC"} loading={loaders.active_users_today} data={activeUsersToday} label={"Active Users Today"} /></div>
       <div className={styles.div7}> <PollCard loading={loaders.popular_poll} poll_question={popularPoll.question} poll_id={popularPoll.id} label={"Most Popular Poll"} /></div>
       <div className={styles.div8}> <PollCard loading={loaders.newest_poll} poll_question={newestPoll.question} poll_id={newestPoll.id} label={"Newest Poll"} /></div>
-      <div className={styles.div9}> <GraphCard loading={loaders.daily_users} data={dailyUsers} xAxis={"date"} yAxis={"new_users"} label={"New Users per Day"} /></div>
-      <div className={styles.div10}> <GraphCard loading={loaders.daily_polls} data={dailyPolls} xAxis={"date"} yAxis={"new_polls"} label={"New Polls per Day"} /></div>
+      <div className={styles.div9}> <GraphCard loading={loaders.daily_users} color={"#f0b9a1"} data={dailyUsers} xAxis={"date"} yAxis={"new_users"} label={"New Users per Day"} /></div>
+      <div className={styles.div10}> <GraphCard loading={loaders.daily_polls} color={"#a9d1af"} data={dailyPolls} xAxis={"date"} yAxis={"new_polls"} label={"New Polls per Day"} /></div>
       <div className={styles.div11}> <PieCard loading={loaders.active_users_ratio} active={usersRatio.active} inactive={usersRatio.inactive} label={"Active Users Ratio"} />  </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useParams } from 'react-router-dom';
 import styles from './PollGraph.module.css';
 import ScrollDialog from '../ScrollDialog/ScrollDialog';
-
+import NotFound from '../NotFound/NotFound';
 
 export interface options {
   answer: string
@@ -27,6 +27,7 @@ const PollGraph = (props: any) => {
   const [empty, setEmpty] = useState<boolean>(true);
   const [next, setNext] = useState<number>();
   const [prev, setPrev] = useState<number>();
+  const [exists, setExists] = useState<boolean>(true);
   let { id } = props;
   const params = {
     headers: {
@@ -37,7 +38,12 @@ const PollGraph = (props: any) => {
 
   const getPoll = () => {
     fetch(`http://localhost:5000/poll/${id}`, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 404) {
+          setExists(false);
+        }
+        return res.json();
+      })
       .then((data) => {
         let counts = 0;
         for (const answer of data["options"]) {
@@ -72,15 +78,15 @@ const PollGraph = (props: any) => {
     setPickedAnswer(e["answer"]);
   }
 
-  function loadSibling(e: any){
-    if(e.currentTarget.lastElementChild.classList.value.includes("right")){
+  function loadSibling(e: any) {
+    if (e.currentTarget.lastElementChild.classList.value.includes("right")) {
       id = next;
     }
-    else{
-      if(e.currentTarget.lastElementChild.classList.value.includes("left")){
+    else {
+      if (e.currentTarget.lastElementChild.classList.value.includes("left")) {
         id = prev;
       }
-      else{
+      else {
         return;
       }
     }
@@ -90,41 +96,48 @@ const PollGraph = (props: any) => {
   }
 
   return (
-    <div className={styles.Poll}>
-      <div className={styles.question}>
-        <h1 style={{ textAlign: 'center' }}>
-          {prev ? (
-             <div onClick={loadSibling} style={{left:"15%"}} className={styles.navigator}><FontAwesomeIcon icon={faArrowLeft} /> </div>
-          ) : ""}
-            
-          {poll["question"]}
-             {next ? (
-                <div  onClick={loadSibling} style={{right:"15%"}} className={styles.navigator}><FontAwesomeIcon icon={faArrowRight} /> </div>
-             ) : ""}
-        </h1>
-        {empty ? (<div style={{ textAlign: 'center' }}>No answers yet</div>) : (
-          <h4>Create a Sub-Poll of the answer:
-            {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - " + poll["question"] + " - (" + pickedAnswer + ")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"} token={props.token} />)}
-          </h4>
-        )}
+    <div>
+      {exists ? (
+        <div className={styles.Poll}>
+        <div className={styles.question}>
+          <h1 style={{ textAlign: 'center' }}>
+            {prev ? (
+              <div onClick={loadSibling} style={{ left: "15%" }} className={styles.navigator}><FontAwesomeIcon icon={faArrowLeft} /> </div>
+            ) : ""}
 
+            {poll["question"]}
+            {next ? (
+              <div onClick={loadSibling} style={{ right: "15%" }} className={styles.navigator}><FontAwesomeIcon icon={faArrowRight} /> </div>
+            ) : ""}
+          </h1>
+          {empty ? (<div style={{ textAlign: 'center' }}>No answers yet</div>) : (
+            <h4>Create a Sub-Poll of the answer:
+              {pickedAnswer == "" ? "(click one of the bars)" : (<ScrollDialog answer={pickedAnswer} poll_id={window.location.href.split('/')[4]} title={"Create Sub-Poll of - " + poll["question"] + " - (" + pickedAnswer + ")"} buttonText={pickedAnswer} actionType={"poll"} component={"poll"} token={props.token} />)}
+            </h4>
+          )}
+
+        </div>
+
+        <BarChart
+          width={700}
+          height={500}
+          data={poll.options}
+
+        >
+          <CartesianGrid strokeDasharray="1 3" />
+          <XAxis dataKey="answer" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="counts" fill="#8884d8" onClick={demoOnClick} cursor="pointer" />
+        </BarChart>
       </div>
-
-      <BarChart
-        width={700}
-        height={500}
-        data={poll.options}
-
-      >
-        <CartesianGrid strokeDasharray="1 3" />
-        <XAxis dataKey="answer" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="counts" fill="#8884d8" onClick={demoOnClick} cursor="pointer" />
-      </BarChart>
-
+      ) : (
+        <NotFound />
+      )}
+      
     </div>
+
   )
 }
 

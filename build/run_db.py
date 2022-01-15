@@ -12,7 +12,7 @@ def sql_call(sql_string):
     conn.close()
     return result_rows
 
-
+print("----------Running DB...------------")
 f = open("./init_db.sql", 'r')
 script = f.read()
 sql_query_string = sql.SQL(script)

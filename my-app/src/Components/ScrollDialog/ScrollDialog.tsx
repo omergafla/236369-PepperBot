@@ -157,16 +157,6 @@ export default function ScrollDialog(props: any) {
   };
 
 
-  const descriptionElementRef = React.useRef<HTMLElement>(null);
-  React.useEffect(() => {
-    if (open) {
-      const { current: descriptionElement } = descriptionElementRef;
-      if (descriptionElement !== null) {
-        descriptionElement.focus();
-      }
-    }
-  }, [open]);
-
   const buttonStyle = {
     marginRight: "1.5vh",
     background: "transparent",
@@ -198,15 +188,9 @@ export default function ScrollDialog(props: any) {
       >
         <DialogTitle id="scroll-dialog-title">{title}</DialogTitle>
         <DialogContent dividers={true}>
-          <DialogContentText
-            id="scroll-dialog-description"
-            ref={descriptionElementRef}
-            tabIndex={-1}
-          >
             {actionType === "poll" ? (<AddPollsForm question={question} inputFields={inputFields} setQuestion={setQuestion} setInputFields={setInputFields} poll_id={poll_id} answer={answer} />)
               : (<AddAdminForm setSignUpForm={setSignUpForm} error={error} setError={setError} />)
             }
-          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

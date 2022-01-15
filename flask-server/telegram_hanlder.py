@@ -84,6 +84,7 @@ def handle_callback_query(update, context):
 
 def main() -> None:
     try:
+        print("----------Running Telegram Handler...------------")
         updater = Updater("5026396246:AAHVsBnqNR0xGLsalEFgRZMRyw2CZT1hKMo")
         dispatcher = updater.dispatcher
         dispatcher.add_handler(CommandHandler("start", start))

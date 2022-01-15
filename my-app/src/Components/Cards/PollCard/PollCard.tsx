@@ -16,7 +16,7 @@ export default function PollCard(props: any) {
           {label}
         </Typography>
         <div>
-        {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) : (<a href={url}> {poll_question} </a>)}
+        {loading ? (<img src={require('../spinner.gif')} height="70px"></img>) : poll_id ? (<a href={url}> {poll_question} </a>) : "No Polls"}
         </div>
       </CardContent>
     </Card>

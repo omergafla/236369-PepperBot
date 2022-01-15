@@ -2097,3 +2097,6 @@ node_modules/@fortawesome/free-solid-svg-icons/LICENSE.txt
 node_modules/@fortawesome/free-solid-svg-icons/README.md
 flask-server/app.py
 flask-server/__pycache__/telegram_hanlder.cpython-39.pyc
+flask-server/__pycache__/app.cpython-39.pyc
+flask-server/__pycache__/config.cpython-39.pyc
+flask-server/__pycache__/telegram_hanlder.cpython-39.pyc
