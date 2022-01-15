@@ -5,14 +5,6 @@ import styles from './Admins.module.css';
 import TopMenu from '../TopMenu/TopMenu';
 import { Button } from '@mui/material';
 
-
-
-
-// const rows: GridRowsProp = [
-//   { id: 1, question: 'Hello', created_by: 'World', createt_at: '2022-01-07' },
-
-// ];
-
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 100, align: 'center', headerAlign: 'center', },
   { field: 'username', headerName: 'Username', width: 250, align: 'center', headerAlign: 'center', },

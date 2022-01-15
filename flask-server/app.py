@@ -112,7 +112,7 @@ def set_active_value(effective_id, active):
 
 
 def send_poll(poll_id, question, answers, users=None):
-    bot = telegram.Bot(token="5026396246:AAHVsBnqNR0xGLsalEFgRZMRyw2CZT1hKMo")
+    bot = telegram.Bot(token=config.bot_key)
     chats = []
     if(users is None):
         chats = get_active_users()

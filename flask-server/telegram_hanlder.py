@@ -5,6 +5,7 @@ import requests
 from telegram.inline.inlinekeyboardbutton import InlineKeyboardButton
 from telegram.inline.inlinekeyboardmarkup import InlineKeyboardMarkup
 import json
+import config
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -85,7 +86,7 @@ def handle_callback_query(update, context):
 def main() -> None:
     try:
         print("----------Running Telegram Handler...------------")
-        updater = Updater("5026396246:AAHVsBnqNR0xGLsalEFgRZMRyw2CZT1hKMo")
+        updater = Updater(config.bot_key)
         dispatcher = updater.dispatcher
         dispatcher.add_handler(CommandHandler("start", start))
         dispatcher.add_handler(CommandHandler("register", register))
