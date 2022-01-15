@@ -1,11 +1,14 @@
 # 236369-HW4
  WWW course - final project - telegram polls bot
+ 
 https://github.com/omergafla/236369-PepperBot
 
 ### INIT:
 python .\build\run_project.py
 
 this command will run simultaneisoly the flask server, react client and the telegram bot handler, also create the DB infrastructure for the project and handles the client side dependencies.
+
+we assume you have at least an empty DB, see build/utils/database.ini to see our configs.
 
 #### Use:
 As an admin, you can perform these actions:
