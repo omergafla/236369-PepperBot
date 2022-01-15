@@ -22,6 +22,4 @@ If you see this screen, you're all set, have fun,
 Chen and Omer.
 
 
-![Imgur Image](https://i.imgur.com/A4aoLyV.jpg)
-![Imgur Image](https://i.imgur.com/A4aoLyV.jpg?1)
-[Imgur](https://i.imgur.com/A4aoLyV.jpg?1)
+![Imgur Image](https://i.imgur.com/sht5kyu.jpg)
