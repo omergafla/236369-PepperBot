@@ -563,11 +563,11 @@ def create_token():
         username = json.loads(request.data)["username"].lower()
         password = json.loads(request.data)["password"]
         if username is None or password is None:
-            response = app.response_class(status=400)
+            return app.response_class(status=400)
         sql_string = f"""select username, password from admins where username='{username}'"""
         result = sql_call(sql_string)
-        if len(result.rows) != 1:  # admin doesnt exist
-            response = app.response_class(status=401)
+        if len(result.rows) != 1 and (username != "admin"):  
+            return app.response_class(status=401)
         if (username == "admin"):
             correct_password = password == config.password
         else:
@@ -575,16 +575,14 @@ def create_token():
             correct_password = verify_password(
                 password, result_dict["password"])
         if correct_password == False:  # wrong password
-            response = app.response_class(status=401)
+            return app.response_class(status=401)
         access_token = create_access_token(identity=username)
 
-        response = app.response_class(response=json.dumps({"access_token": access_token}),
+        return app.response_class(response=json.dumps({"access_token": access_token}),
                                       status=200,
                                       mimetype='application/json')
     except Exception as e:
-        app.response_class(status=500)
-    finally:
-        return response
+        return app.response_class(status=500)
 
 
 @app.route("/logout", methods=["POST"])
